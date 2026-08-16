@@ -1,0 +1,393 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0b0b0e;
+    --bg-elevated:#131318;
+    --purple:#8c5cf5;
+    --purple-soft:#c9b8ff;
+    --text:#f2f1f7;
+    --text-muted:#9c9aa8;
+    --line: rgba(255,255,255,0.09);
+  }
+  *{box-sizing:border-box;}
+  .wc-root{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  .wc-root h1,.wc-root h2,.wc-root h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .wc-root a{color:var(--purple-soft); text-decoration:underline; text-underline-offset:2px;}
+  .wc-root a:hover{color:#fff;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--purple-soft);
+  }
+
+  /* HERO */
+  .hero{position:relative; padding:72px 40px 56px; border-bottom:1px solid var(--line); overflow:hidden;}
+  .hero::before{
+    content:""; position:absolute; top:-140px; right:-120px; width:420px; height:420px;
+    background:radial-gradient(circle, rgba(140,92,245,0.35), transparent 70%); filter:blur(10px); pointer-events:none;
+  }
+  .hero-inner{position:relative; max-width:760px;}
+  .hero h1{font-size:clamp(28px,4vw,42px); line-height:1.12; margin-top:14px;}
+  .hero p.role{color:var(--text-muted); font-size:15px; margin-top:18px;}
+  .hero p.blurb{color:var(--text-muted); font-size:15px; margin-top:14px; max-width:640px;}
+  .hero p.blurb strong{color:var(--text); font-weight:600;}
+
+  /* STAT STRIP */
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--line);}
+  .stat{padding:28px 32px; border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; color:var(--purple-soft);}
+  .stat .label{font-size:13px; color:var(--text-muted); margin-top:4px;}
+
+  /* SECTION */
+  .section{padding:44px 40px; border-bottom:1px solid var(--line);}
+  .section-head h2{font-size:21px; margin-top:10px;}
+  .section-head .status{font-size:12px; color:var(--text-muted); margin-top:6px;}
+  .sub{margin-top:34px;}
+  .sub:first-of-type{margin-top:22px;}
+  .sub-title{
+    font-size:12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--text); border-left:2px solid var(--purple); padding-left:10px; margin-bottom:16px;
+  }
+  .sub p{color:var(--text-muted); font-size:14.5px; max-width:660px;}
+  .sub p strong{color:var(--text); font-weight:600;}
+  .quote{
+    font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:500; color:var(--text);
+    border-left:2px solid var(--purple); padding-left:16px; max-width:640px; margin-top:12px; line-height:1.5;
+  }
+
+  /* pipeline (reused for process + architecture + roadmap) */
+  .pipeline{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; position:relative; margin-top:22px;}
+  .pipeline.cols-5{grid-template-columns:repeat(5,1fr);}
+  .pipeline::before{content:""; position:absolute; top:15px; left:0; right:0; height:1px; background:var(--line);}
+  .pipeline-step{position:relative;}
+  .pipeline-num{
+    width:30px; height:30px; border-radius:50%; background:var(--bg); border:1px solid var(--purple); color:var(--purple-soft);
+    display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;
+    position:relative; z-index:1; margin-bottom:10px;
+  }
+  .pipeline-title{font-weight:600; font-size:13px; color:var(--text); margin-bottom:4px;}
+  .pipeline-desc{font-size:11.5px; color:var(--text-muted); line-height:1.45;}
+
+  /* venn diagram + pill tags */
+  .venn-diagram{position:relative; isolation:isolate; width:100%; max-width:600px; aspect-ratio:16/12; margin:26px auto 8px;}
+  .venn-circle{position:absolute; border-radius:50%; mix-blend-mode:screen;}
+  .venn-circle.a{width:58%; height:58%; top:0; left:6%; background:rgba(140,92,245,0.42);}
+  .venn-circle.b{width:58%; height:58%; top:0; right:6%; background:rgba(91,110,255,0.38);}
+  .venn-circle.c{width:60%; height:58%; bottom:0; left:20%; background:rgba(201,184,255,0.32);}
+  .venn-role-label{position:absolute; z-index:1; font-size:13px; letter-spacing:0.1em;}
+  .venn-role-label.students{top:4%; left:12%;}
+  .venn-role-label.clients{top:4%; right:8%;}
+  .venn-role-label.instructors{bottom:2%; left:50%; transform:translateX(-50%);}
+  .venn-pill{
+    position:absolute; z-index:3; background:#0d0d11; border:1px solid rgba(140,92,245,0.5); border-radius:6px;
+    padding:8px 12px; font-size:10.5px; color:var(--text); text-align:center; max-width:150px; line-height:1.3;
+  }
+  .venn-pill.p1{top:8%; left:50%; transform:translateX(-50%);}
+  .venn-pill.p2{top:34%; left:12%;}
+  .venn-pill.p3{top:34%; right:12%;}
+  .venn-pill.p4{bottom:16%; left:50%; transform:translateX(-50%);}
+
+  /* validation grid */
+  .validation-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;}
+  .validation-card{background:#0d0d11; border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .validation-card .app-name{padding:12px 14px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; color:#fff; background:rgba(140,92,245,0.22); border-bottom:1px solid var(--line);}
+  .validation-row{padding:11px 14px; font-size:11.5px; color:var(--text-muted); border-bottom:1px solid var(--line); line-height:1.42;}
+  .validation-row:last-child{border-bottom:none;}
+  .validation-row .tag{display:block; font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;}
+  .validation-row.worked .tag{color:#5be08a;}
+  .validation-row.didnt .tag{color:#f18ba0;}
+  .validation-row.fix .tag{color:var(--purple-soft);}
+
+  /* insight row */
+  .insight-row{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;}
+  .insight-card{background:#0d0d11; border:1px solid rgba(140,92,245,0.5); border-radius:10px; padding:16px;}
+  .insight-card .num{width:22px; height:22px; border-radius:50%; border:1px solid var(--purple); color:var(--purple-soft); font-family:'IBM Plex Mono',monospace; font-size:11px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+  .insight-card .title{font-family:'Inter',sans-serif; font-weight:600; font-size:13px; color:var(--text); margin-bottom:6px;}
+  .insight-card .desc{font-size:11.5px; color:var(--text-muted); line-height:1.45;}
+
+  /* NPS */
+  .nps-wrap{margin-top:22px;}
+  .nps-badge{display:inline-flex; align-items:center; gap:8px; background:var(--bg-elevated); border:1px solid var(--purple); border-radius:100px; padding:7px 16px; font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--purple-soft); margin-bottom:16px;}
+  .nps-scale{display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap;}
+  .nps-dot{width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:11px; color:#fff;}
+  .nps-dot.red{background:#e0525b;}
+  .nps-dot.yellow{background:#dcae42;}
+  .nps-dot.green{background:#7fc95c;}
+  .nps-quotes{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .nps-quote{background:#0d0d11; border:1px solid var(--line); border-radius:8px; padding:12px 14px; font-size:12px; color:var(--text-muted); line-height:1.45; font-style:italic;}
+  .nps-quote span{display:block; margin-top:6px; font-style:normal; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--purple-soft); text-transform:uppercase;}
+
+  /* bar chart */
+  .bar-chart{display:flex; justify-content:space-around; align-items:flex-end; height:210px; margin-top:26px; border-bottom:1px solid var(--line); padding:0 10px;}
+  .bar-year{display:flex; flex-direction:column; align-items:center;}
+  .bar-group{display:flex; align-items:flex-end; gap:6px; height:180px;}
+  .bar{width:22px; border-radius:3px 3px 0 0; position:relative;}
+  .bar .val{position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--text-muted); white-space:nowrap;}
+  .bar.revenue{background:linear-gradient(180deg,#8c5cf5,#6a3fd6);}
+  .bar.costs{background:rgba(201,184,255,0.45);}
+  .bar.profit{background:#5be08a;}
+  .bar-year-label{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted); margin-top:10px;}
+  .bar-legend{display:flex; gap:18px; justify-content:center; margin-top:16px; font-size:11px; color:var(--text-muted);}
+  .bar-legend span{display:inline-flex; align-items:center; gap:5px;}
+  .bar-legend .dot{width:8px; height:8px; border-radius:2px; display:inline-block;}
+
+  .impact-badge{
+    display:inline-flex; align-items:center; gap:9px; background:var(--bg-elevated); border:1px solid var(--line);
+    border-radius:100px; padding:9px 16px; font-size:13.5px; color:var(--purple-soft); margin-top:22px;
+  }
+  .pulse-dot{width:8px; height:8px; border-radius:50%; background:var(--purple); flex:none; animation:pulse 2s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(140,92,245,0.55);}
+    70%{box-shadow:0 0 0 8px rgba(140,92,245,0);}
+    100%{box-shadow:0 0 0 0 rgba(140,92,245,0);}
+  }
+
+  /* SKILLS FOOTER */
+  .skills{padding:40px;}
+  .skills h3{font-size:16px; margin-bottom:16px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text); background:var(--bg-elevated); border:1px solid var(--line); padding:6px 12px; border-radius:100px;}
+
+  @media (max-width:640px){
+    .hero{padding:52px 20px 40px;}
+    .stats{grid-template-columns:1fr;}
+    .stat{border-right:none; border-bottom:1px solid var(--line);}
+    .section{padding:32px 20px;}
+    .pipeline,.pipeline.cols-5{grid-template-columns:1fr; gap:22px;}
+    .pipeline::before{display:none;}
+    .venn-diagram{aspect-ratio:auto; height:auto;}
+    .venn-circle,.venn-role-label{display:none;}
+    .venn-pill{position:static; width:100%; margin-bottom:10px; transform:none; max-width:none;}
+    .validation-grid,.insight-row{grid-template-columns:1fr;}
+    .nps-quotes{grid-template-columns:1fr;}
+    .bar-chart{height:auto; flex-direction:column; gap:22px; align-items:stretch; border-bottom:none;}
+    .bar-group{height:120px;}
+    .skills{padding:32px 20px;}
+  }
+</style>
+
+<div class="wc-root">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">WeCollab · EdTech Industry Project</div>
+      <h1>Simplifying Project-Based Learning</h1>
+      <p class="role">Shreya Pabalkar · UX Researcher &amp; Designer · Indiana University Industry Project · Oct–Dec 2024</p>
+      <p class="blurb">WeCollab connects <strong>students, instructors, and clients</strong> through a streamlined Project-Based Learning ecosystem — helping students find real-world projects, clients submit and track proposals, and instructors manage collaboration end to end.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">11</div><div class="label">Research participants (9 students, 1 instructor, 1 client)</div></div>
+    <div class="stat"><div class="num">8.6</div><div class="label">NPS score from usability testing</div></div>
+    <div class="stat"><div class="num">$450K</div><div class="label">Projected Year 3 revenue</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Problem &amp; Goal</span>
+      <h2>Unstructured workflows were breaking real-world collaboration</h2>
+    </div>
+    <div class="quote">"Stakeholders in PBL/SL settings are looking to align educational and business goals but they lack the ability to create a symbiotic experience because of unstructured workflows. Therefore, meaningful contributions are not made."</div>
+
+    <div class="sub">
+      <h3 class="sub-title">Environmental Analysis</h3>
+      <p>Analyzing the environment around students, instructors, and clients surfaced where their needs overlapped — and where the market pressure was building.</p>
+      <div class="venn-diagram">
+        <div class="venn-circle a"></div>
+        <div class="venn-circle b"></div>
+        <div class="venn-circle c"></div>
+        <div class="venn-role-label eyebrow students">Students</div>
+        <div class="venn-role-label eyebrow clients">Clients</div>
+        <div class="venn-role-label eyebrow instructors">Instructors</div>
+        <div class="venn-pill p1">Rising Demand for Real-World Learning</div>
+        <div class="venn-pill p2">Increased Cost Pressures</div>
+        <div class="venn-pill p3">EdTech Providers</div>
+        <div class="venn-pill p4">Digital Collaboration</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Research Method &amp; Process</span>
+      <h2>From secondary research to a pitch-ready concept</h2>
+    </div>
+    <div class="pipeline cols-5">
+      <div class="pipeline-step"><div class="pipeline-num">1</div><div class="pipeline-title">Research</div><div class="pipeline-desc">Secondary research, environmental analysis, user interviews.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">2</div><div class="pipeline-title">Data Analysis</div><div class="pipeline-desc">Value proposition canvas, business model canvas, TAM analysis.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">3</div><div class="pipeline-title">Brainstorming</div><div class="pipeline-desc">Generated 3 ideas, storyboarded the strongest concept.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">4</div><div class="pipeline-title">Testing</div><div class="pipeline-desc">Think-aloud usability testing on the prototype.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">5</div><div class="pipeline-title">Pitch</div><div class="pipeline-desc">Presented the validated concept and business case.</div></div>
+    </div>
+
+    <div class="sub">
+      <h3 class="sub-title">Participants &amp; Methods</h3>
+      <p>Ran <strong>user interviews</strong>, <strong>task analysis</strong>, and a <strong>post-test evaluation</strong> with 9 students, 1 instructor, and 1 client — gathering expectations, pain points, and priorities, then watching them navigate the Client Project Portal and dashboard tools before prioritizing improvements for the final prototype.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Platform Architecture</span>
+      <h2>How the platform works, end to end</h2>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="pipeline-num">1</div><div class="pipeline-title">Input</div><div class="pipeline-desc">Students submit proposals; instructors approve matches and grade; clients provide project briefs.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">2</div><div class="pipeline-title">Matching &amp; Workflow</div><div class="pipeline-desc">Centralized matching engine plus workflow tools — drive, calendar, chat, progress tracker, and more.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">3</div><div class="pipeline-title">Backend &amp; Analytics</div><div class="pipeline-desc">Cloud/edge computing for scale, data intelligence on match and task metrics, and visualization dashboards.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">4</div><div class="pipeline-title">Role-Based Output</div><div class="pipeline-desc">Students get proposal &amp; feedback dashboards; instructors get oversight tools; clients get deliverable tracking.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Iteration &amp; Validation</span>
+      <h2>Testing Iteration 1 across all three roles</h2>
+    </div>
+    <div class="validation-grid">
+      <div class="validation-card">
+        <div class="app-name">Instructor App</div>
+        <div class="validation-row worked"><span class="tag">What Worked</span>Merit-based matches, workflow tracking.</div>
+        <div class="validation-row didnt"><span class="tag">What Didn't</span>Manual evaluations, no skill tracking.</div>
+        <div class="validation-row fix"><span class="tag">Fix</span>Automate evaluation and outcome tracking.</div>
+      </div>
+      <div class="validation-card">
+        <div class="app-name">Student App</div>
+        <div class="validation-row worked"><span class="tag">What Worked</span>Aggregated docs, grading integration.</div>
+        <div class="validation-row didnt"><span class="tag">What Didn't</span>No team spaces, no real-time feedback.</div>
+        <div class="validation-row fix"><span class="tag">Fix</span>Add profiles, team spaces, and rejection feedback.</div>
+      </div>
+      <div class="validation-card">
+        <div class="app-name">Client View</div>
+        <div class="validation-row worked"><span class="tag">What Worked</span>Easy proposals, showcase of past projects.</div>
+        <div class="validation-row didnt"><span class="tag">What Didn't</span>No messaging or status updates.</div>
+        <div class="validation-row fix"><span class="tag">Fix</span>Add in-platform messaging and proposal tracking.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Insights Gathered</span>
+      <h2>Desirability, feasibility, and viability</h2>
+    </div>
+    <div class="insight-row">
+      <div class="insight-card">
+        <div class="num">1</div>
+        <div class="title">Desirability</div>
+        <div class="desc">Students valued the fairness of merit-based admission; clients valued detailed proposals; user-friendly workflows mattered most to both.</div>
+      </div>
+      <div class="insight-card">
+        <div class="num">2</div>
+        <div class="title">Technical Feasibility</div>
+        <div class="desc">Clients found the portal intuitive but wanted calendar integration and deeper communication; students noted a learning curve for workflows.</div>
+      </div>
+      <div class="insight-card">
+        <div class="num">3</div>
+        <div class="title">Business Viability</div>
+        <div class="desc">Clients saw value in matching but wanted tiered commitment options; instructors valued dual-layer approval for quality control.</div>
+      </div>
+    </div>
+
+    <div class="sub nps-wrap">
+      <h3 class="sub-title">User Feedback</h3>
+      <div class="nps-badge">NPS 8.6</div>
+      <div class="nps-scale">
+        <div class="nps-dot red">1</div><div class="nps-dot red">2</div><div class="nps-dot red">3</div>
+        <div class="nps-dot red">4</div><div class="nps-dot red">5</div><div class="nps-dot red">6</div>
+        <div class="nps-dot yellow">7</div><div class="nps-dot yellow">8</div>
+        <div class="nps-dot green">9</div><div class="nps-dot green">10</div>
+      </div>
+      <div class="nps-quotes">
+        <div class="nps-quote">"The platform made collaboration easy to manage. Would use this as a client."<span>Client</span></div>
+        <div class="nps-quote">"The platform has potential — it's just a matter of ironing out the minor details."<span>Instructor</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="eyebrow">Business Viability</span>
+      <h2>Revenue model &amp; 3-year growth projection</h2>
+    </div>
+    <p style="color:var(--text-muted); font-size:14.5px; max-width:660px; margin-top:10px;">Modeled around a <strong>3rd-party subscription</strong> (Basic $500/project, Premium $1,500/project), <strong>institution licensing</strong> ($10K/institution/year), and add-ons like certifications and advanced tools.</p>
+
+    <div class="bar-chart">
+      <div class="bar-year">
+        <div class="bar-group">
+          <div class="bar revenue" style="height:90px;"><span class="val">$225K</span></div>
+          <div class="bar costs" style="height:68px;"><span class="val">$170K</span></div>
+          <div class="bar profit" style="height:22px;"><span class="val">$55K</span></div>
+        </div>
+        <div class="bar-year-label">Year 1</div>
+      </div>
+      <div class="bar-year">
+        <div class="bar-group">
+          <div class="bar revenue" style="height:140px;"><span class="val">$350K</span></div>
+          <div class="bar costs" style="height:68px;"><span class="val">$170K</span></div>
+          <div class="bar profit" style="height:72px;"><span class="val">$180K</span></div>
+        </div>
+        <div class="bar-year-label">Year 2</div>
+      </div>
+      <div class="bar-year">
+        <div class="bar-group">
+          <div class="bar revenue" style="height:180px;"><span class="val">$450K</span></div>
+          <div class="bar costs" style="height:68px;"><span class="val">$170K</span></div>
+          <div class="bar profit" style="height:112px;"><span class="val">$280K</span></div>
+        </div>
+        <div class="bar-year-label">Year 3</div>
+      </div>
+    </div>
+    <div class="bar-legend">
+      <span><span class="dot" style="background:#8c5cf5;"></span>Revenue</span>
+      <span><span class="dot" style="background:rgba(201,184,255,0.7);"></span>Costs</span>
+      <span><span class="dot" style="background:#5be08a;"></span>Profit</span>
+    </div>
+  </div>
+
+  <div class="section" style="border-bottom:1px solid var(--line);">
+    <div class="section-head">
+      <span class="eyebrow">Impact &amp; Roadmap</span>
+      <h2>From validated concept to platform launch</h2>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="pipeline-num">1</div><div class="pipeline-title">Incorporate Feedback</div><div class="pipeline-desc">Updated designs based on research findings.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">2</div><div class="pipeline-title">Test Usability</div><div class="pipeline-desc">Tested platform usability and collected evaluations.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">3</div><div class="pipeline-title">Implement Fixes</div><div class="pipeline-desc">Rolled out improvements based on feedback.</div></div>
+      <div class="pipeline-step"><div class="pipeline-num">4</div><div class="pipeline-title">Platform Launch</div><div class="pipeline-desc">Final platform goes live.</div></div>
+    </div>
+    <div class="impact-badge"><span class="pulse-dot"></span> Delivered a validated PBL platform concept with an 8.6 NPS and a $100K+ Year 1 revenue model.</div>
+  </div>
+
+  <div class="skills">
+    <h3>Skills &amp; Tools</h3>
+    <div class="chips">
+      <span class="chip">User Interviews</span>
+      <span class="chip">Task Analysis</span>
+      <span class="chip">Usability Testing</span>
+      <span class="chip">Business Model Canvas</span>
+      <span class="chip">TAM Analysis</span>
+      <span class="chip">Value Proposition Canvas</span>
+      <span class="chip">Storyboarding</span>
+      <span class="chip">Figma</span>
+    </div>
+  </div>
+
+</div>

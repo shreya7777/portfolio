@@ -7,9 +7,9 @@
   <meta name="description" content="Shreya Pabalkar — a UX Designer turning bizarre ideas into beautifully organized realities." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=26" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
 </head>
 <body>
 
@@ -17,7 +17,9 @@
 
     <!-- ============ HEADER ============ -->
     <header class="site-header">
-      <a class="logo" href="#home" data-nav="home">shreya<span class="logo-dot">.</span></a>
+      <a class="logo" href="#home" data-nav="home">
+        <img src="Homepage/mylogo.png" alt="Shreya Pabalkar" />
+      </a>
 
       <nav class="tabs" aria-label="Main">
         <button class="tab is-active" data-tab="home">All</button>
@@ -41,123 +43,112 @@
     <!-- ============ VIEW: HOME ============ -->
     <main id="view-home" class="view">
 
-      <div class="bento-hero">
-        <div class="card c-cream card-intro">
-          <a class="resume-paper" data-resume href="#" target="_blank" rel="noopener" aria-label="Open resume PDF">
+      <div class="bento-grid">
+
+        <!-- photo -->
+        <div class="card box-b card-photo">
+          <img id="hero-photo" alt="Shreya Pabalkar" />
+        </div>
+
+        <!-- about + resume -->
+        <div class="card box-a card-intro">
+          <a class="resume-paper" id="resume-link" data-resume href="#" target="_blank" rel="noopener" aria-label="Open resume PDF">
             <svg class="paperclip" viewBox="0 0 24 34" aria-hidden="true">
               <path d="M8 3 v20 a4 4 0 0 0 8 0 V7 a2.4 2.4 0 0 0 -4.8 0 v15"
-                    fill="none" stroke="#7c8794" stroke-width="2.4" stroke-linecap="round"/>
+                    fill="none" stroke="#1B264F" stroke-width="2.4" stroke-linecap="round"/>
             </svg>
             <span class="paper-title">Resume</span>
             <span class="paper-line"></span>
             <span class="paper-line"></span>
             <span class="paper-line short"></span>
-            <span class="paper-open">Open ↗</span>
           </a>
-          <p class="card-label" id="hero-label">About</p>
-          <h1 id="hero-title"></h1>
-          <p class="intro-tagline" id="hero-tagline"></p>
-          <p class="intro-about" id="hero-about"></p>
-          <img id="hero-photo" class="hero-cutout" alt="Cutout portrait of Shreya Pabalkar" />
+          <div class="intro-body">
+            <p class="card-label" id="hero-label">Who is she?</p>
+            <h1 id="hero-title"></h1>
+            <p class="intro-tagline" id="hero-tagline"></p>
+            <p class="intro-about" id="hero-about"></p>
+          </div>
         </div>
 
-        <div class="card card-map">
-          <svg viewBox="0 0 220 128" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Map">
-            <rect width="220" height="128" fill="#eef3ec"/>
-            <path d="M-10 30 C 50 20, 90 55, 230 38" stroke="#fbd89a" stroke-width="7" fill="none"/>
-            <path d="M-10 82 C 60 95, 140 70, 230 92" stroke="#f9c46b" stroke-width="9" fill="none"/>
-            <path d="M60 -10 C 55 40, 75 90, 62 140" stroke="#ffffff" stroke-width="5" fill="none"/>
-            <path d="M150 -10 C 145 50, 165 80, 155 140" stroke="#ffffff" stroke-width="5" fill="none"/>
-            <path d="M-10 55 L 230 62" stroke="#ffffff" stroke-width="3" fill="none"/>
-            <path d="M20 128 C 40 90, 90 110, 120 128 Z" fill="#cfe6cd"/>
-            <path d="M170 0 C 190 20, 215 10, 220 0 Z" fill="#cfe6cd"/>
-            <rect x="30" y="34" width="14" height="10" rx="2" fill="#dde5da"/>
-            <rect x="120" y="40" width="16" height="11" rx="2" fill="#dde5da"/>
-            <rect x="85" y="95" width="14" height="10" rx="2" fill="#dde5da"/>
-            <g transform="translate(110 52)">
-              <path d="M0 -18 a12 12 0 0 1 12 12 c0 8 -12 20 -12 20 s-12 -12 -12 -20 a12 12 0 0 1 12 -12z" fill="#e2445c"/>
-              <circle cx="0" cy="-6" r="5" fill="#fff"/>
-            </g>
-            <text id="map-label" x="110" y="118" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" font-weight="700" fill="#5f7476"></text>
-          </svg>
+        <!-- map -->
+        <div class="card box-a card-map">
+          <img src="Homepage/atlanta-map.jpg" alt="Map of Atlanta, GA" />
+          <span class="map-label" id="map-label">Atlanta, GA</span>
         </div>
 
-        <div class="card c-white card-tools">
+        <!-- tools -->
+        <div class="card box-b card-tools">
           <p class="card-label">Tools I use</p>
-          <div class="tools-row" id="tools-home"></div>
-          <img id="hero-mug" class="mug-pop" alt="Coffee mug illustration" hidden />
+          <div class="tools-row" id="tools-home">
+            <span class="mug-wrap" id="mug-wrap" tabindex="0" role="img" aria-label="Coffee mug">
+              <span class="steam" aria-hidden="true"><span></span><span></span><span></span></span>
+              <img id="hero-mug" alt="" />
+            </span>
+          </div>
         </div>
 
-        <div class="card c-blue card-skills">
-          <p class="card-label">Skills</p>
-          <div class="skills-col" id="skills"></div>
+        <!-- chat -->
+        <div class="card chat-card card-chat" id="chat-card">
+          <div class="chat-thread" id="chat-thread"></div>
+          <form class="chat-input-row" id="chat-form" autocomplete="off">
+            <input class="chat-input" id="chat-input" type="text" placeholder="iMessage" maxlength="180" aria-label="Type a message" />
+            <button class="chat-send" id="chat-send" type="submit" aria-label="Send message" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+            </button>
+          </form>
         </div>
       </div>
 
       <section class="brands-section">
-        <div class="section-banner">
-          <span id="brands-label">Brands that trust me</span>
-          <span class="banner-arrow">↗</span>
-        </div>
-        <div class="marquee">
-          <div class="marquee-track" id="brands"></div>
+        <div class="card box-white card-brands">
+          <p class="card-label" id="brands-label">Brands that trust me</p>
+          <div class="marquee">
+            <div class="marquee-track" id="brands"></div>
+          </div>
         </div>
       </section>
 
-      <div class="projects-grid" id="projects-home"></div>
-
-      <div class="card c-orange card-how">
-        <p class="card-label" id="how-label">How I shape user experiences</p>
-        <div class="how-cols" id="how"></div>
+      <div class="projects-masonry">
+        <div class="masonry-col" id="projects-home-col1"></div>
+        <div class="masonry-col" id="projects-home-col2"></div>
       </div>
     </main>
 
     <!-- ============ VIEW: ABOUT ============ -->
     <main id="view-about" class="view" hidden>
-      <div class="about-grid">
-        <div class="about-main">
-          <div class="card c-cream card-story" id="about-story"></div>
-          <div class="card c-white card-exp">
-            <p class="card-label">Experience</p>
-            <ul class="exp-list" id="about-experience"></ul>
-          </div>
-          <div class="card c-lavender card-vision" id="about-vision"></div>
+      <div class="about-simple">
+        <div class="card box-white card-story" id="about-story"></div>
+        <div class="about-secondary">
+          <div class="card box-a card-carousel" id="about-carousel"></div>
+          <div class="card box-b card-spotify" id="about-spotify"></div>
         </div>
-        <aside class="about-side">
-          <div class="card c-yellow">
-            <p class="card-label">What I do best</p>
-            <p class="side-blurb" id="about-best"></p>
-          </div>
-          <div class="card c-white">
-            <p class="card-label">Tools I use</p>
-            <div class="tools-row" id="tools-about"></div>
-          </div>
-          <div class="card c-white card-gallery" id="gallery-hobbies"></div>
-          <div class="card c-white card-gallery" id="gallery-outdoor"></div>
-          <div class="card c-green">
-            <p class="card-label">More work</p>
-            <ul class="exp-list compact" id="about-morework"></ul>
-          </div>
-        </aside>
       </div>
     </main>
 
     <!-- ============ VIEW: WORK ============ -->
     <main id="view-work" class="view" hidden>
-      <div class="projects-grid" id="projects-work"></div>
-      <div class="card c-cream card-timeline">
+      <div class="card box-white card-timeline">
         <div class="timeline" id="timeline"></div>
       </div>
+      <div class="projects-grid" id="projects-work"></div>
+      <section class="testimonials-section">
+        <div class="testimonials-grid" id="testimonials"></div>
+      </section>
     </main>
 
     <!-- ============ VIEW: PROJECT DETAIL ============ -->
     <main id="view-project" class="view" hidden>
       <a class="back-link" href="#work" data-nav="work">← All work</a>
-      <div class="card c-cream card-project-detail">
-        <p class="card-label" id="project-category"></p>
-        <h1 id="project-title"></h1>
-        <div class="project-body" id="project-body"></div>
-        <div class="project-gallery" id="project-gallery"></div>
+      <div class="project-layout no-nav" id="project-layout">
+        <nav class="project-nav" id="project-nav" hidden>
+          <ul id="project-nav-list"></ul>
+        </nav>
+        <div class="card box-white card-project-detail">
+          <p class="card-label" id="project-category"></p>
+          <h1 id="project-title"></h1>
+          <div class="project-body" id="project-body"></div>
+          <div class="project-gallery" id="project-gallery"></div>
+        </div>
       </div>
     </main>
 
@@ -168,7 +159,9 @@
           <h2 id="chat-title">Hit me up if you want to chat about</h2>
           <div class="chat-chips" id="chat-chips"></div>
         </div>
-        <a class="logo footer-logo" href="#home" data-nav="home">shreya<span class="logo-dot">.</span></a>
+        <a class="logo footer-logo" href="#home" data-nav="home">
+          <img src="Homepage/mylogo.png" alt="Shreya Pabalkar" />
+        </a>
       </div>
       <div class="footer-bottom">
         <div class="socials">
@@ -191,6 +184,6 @@
     </footer>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=22"></script>
 </body>
 </html>

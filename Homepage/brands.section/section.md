@@ -1,6 +1,6 @@
-# Brands that trust me
+# Brands I've helped grow
 
-Each line is: image file | brand name (images live in this folder)
+Each line is: image file | brand name (images live in Homepage/transparent logos/)
 
 - 4.png | Decathlon
 - 3.png | CyberChimps

@@ -1,0 +1,573 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0b0b0e;
+    --bg-elevated:#131318;
+    --purple:#8c5cf5;
+    --purple-soft:#c9b8ff;
+    --text:#f2f1f7;
+    --text-muted:#9c9aa8;
+    --line: rgba(255,255,255,0.09);
+  }
+  *{box-sizing:border-box;}
+  .vcs-root{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:0;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  .vcs-root h1,.vcs-root h2,.vcs-root h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--purple-soft);
+  }
+  /* HERO */
+  .hero{
+    position:relative;
+    padding:72px 40px 56px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute;
+    top:-140px; right:-120px;
+    width:420px; height:420px;
+    background:radial-gradient(circle, rgba(140,92,245,0.35), transparent 70%);
+    filter:blur(10px);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative; max-width:760px;}
+  .hero h1{font-size:clamp(28px,4vw,42px); line-height:1.12; margin-top:14px;}
+  .hero p.role{color:var(--text-muted); font-size:15px; margin-top:18px;}
+  .hero p.blurb{color:var(--text-muted); font-size:15px; margin-top:14px; max-width:620px;}
+  .hero p.blurb strong{color:var(--text); font-weight:600;}
+
+  /* STAT STRIP */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border-bottom:1px solid var(--line);
+  }
+  .stat{
+    padding:28px 32px;
+    border-right:1px solid var(--line);
+  }
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; color:var(--purple-soft);}
+  .stat .label{font-size:13px; color:var(--text-muted); margin-top:4px;}
+
+  /* PROJECTS */
+  .project{
+    padding:44px 40px;
+    border-bottom:1px solid var(--line);
+    display:grid;
+    grid-template-columns:160px 1fr;
+    gap:28px;
+  }
+  .project .tag-col .eyebrow{display:block;}
+  .project .tag-col .status{
+    font-size:12px; color:var(--text-muted); margin-top:8px;
+  }
+  .project h2{font-size:21px; margin-bottom:12px;}
+  .project ul{margin:14px 0 0; padding-left:18px; color:var(--text-muted); font-size:14.5px;}
+  .project ul li{margin-bottom:6px;}
+  .project ul li strong{color:var(--text); font-weight:600;}
+  .impact{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    font-size:13.5px;
+    color:var(--purple-soft);
+  }
+  .impact span{color:var(--text-muted);}
+
+  /* DEEP DIVE: VOYIX CENTRAL */
+  .project.deep-dive{grid-template-columns:1fr;}
+  .project-head h2{font-size:21px; margin-top:10px;}
+  .project-head .status{font-size:12px; color:var(--text-muted); margin-top:6px;}
+
+  .sub{margin-top:34px;}
+  .sub-title{
+    font-size:12.5px; font-family:'IBM Plex Mono',monospace; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--text);
+    border-left:2px solid var(--purple); padding-left:10px; margin-bottom:16px;
+  }
+  .sub p{color:var(--text-muted); font-size:14.5px; max-width:640px;}
+  .sub p strong{color:var(--text); font-weight:600;}
+
+  /* convergence graphic */
+  .converge-graphic{margin-top:22px;}
+  .legacy-row{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:560px; margin:0 auto;}
+  .legacy-chip{
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg-elevated); border:1px solid var(--line); border-radius:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-muted);
+  }
+  .converge-arrow{text-align:center; color:var(--purple-soft); font-size:20px; margin:10px 0;}
+  .central-pill{
+    max-width:300px; margin:0 auto;
+    background:linear-gradient(135deg, var(--purple), #6a3fd6);
+    border-radius:12px; padding:16px 24px; text-align:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; color:#fff;
+  }
+  .central-pill span{display:block; font-family:'Inter',sans-serif; font-weight:400; font-size:12px; color:rgba(255,255,255,0.82); margin-top:4px;}
+
+  /* org-chart tree (Problem & Goal) */
+  .tree{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:auto 22px auto 22px auto;
+    column-gap:10px;
+    max-width:640px;
+    margin:24px auto 0;
+  }
+  .tree-node{
+    background:var(--purple-soft);
+    color:#1a1030;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:12px;
+    text-align:center;
+    padding:12px 6px;
+    border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    min-height:40px;
+  }
+  .tree-node.top-1{grid-row:1; grid-column:1;}
+  .tree-node.top-2{grid-row:1; grid-column:2;}
+  .tree-node.top-3{grid-row:1; grid-column:3;}
+  .tree-node.top-4{grid-row:1; grid-column:4;}
+  .tree-node.bottom-1{grid-row:5; grid-column:1;}
+  .tree-node.bottom-2{grid-row:5; grid-column:2;}
+  .tree-node.bottom-3{grid-row:5; grid-column:3;}
+  .tree-node.bottom-4{grid-row:5; grid-column:4;}
+  .tree-node.center{
+    grid-row:3; grid-column:2/4;
+    background:linear-gradient(135deg, var(--purple), #6a3fd6);
+    color:#fff;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:14px;
+  }
+  .connector{position:relative; grid-column:1/5; height:22px;}
+  .connector.top{grid-row:2;}
+  .connector.bottom{grid-row:4;}
+  .connector .tick{position:absolute; width:1px; background:var(--line);}
+  .connector.top .tick{top:0; height:50%;}
+  .connector.bottom .tick{bottom:0; top:50%;}
+  .connector .tick.c1{left:12.5%;}
+  .connector .tick.c2{left:37.5%;}
+  .connector .tick.c3{left:62.5%;}
+  .connector .tick.c4{left:87.5%;}
+  .connector .bus{position:absolute; left:12.5%; right:12.5%; top:50%; height:1px; background:var(--line);}
+  .connector .stem{position:absolute; left:50%; width:1px; background:var(--line);}
+  .connector.top .stem{top:50%; bottom:0;}
+  .connector.bottom .stem{top:0; bottom:50%;}
+
+  /* Venn framework diagram with embedded process cards */
+  .venn-diagram{
+    position:relative; isolation:isolate;
+    width:100%; max-width:640px; aspect-ratio:16/13.5;
+    margin:28px auto 8px;
+  }
+  .venn-circle{position:absolute; border-radius:50%; mix-blend-mode:screen;}
+  .venn-circle.users{width:64%; height:62%; top:0; left:18%; background:radial-gradient(circle at 50% 40%, rgba(140,92,245,0.65), rgba(140,92,245,0.28));}
+  .venn-circle.context{width:66%; height:66%; top:30%; left:0; background:rgba(201,184,255,0.32);}
+  .venn-circle.content{width:66%; height:66%; top:30%; left:34%; background:rgba(91,110,255,0.38);}
+
+  .venn-tag{position:absolute; z-index:1; text-align:center;}
+  .venn-tag .eyebrow{display:block; font-size:15px; letter-spacing:0.14em;}
+  .venn-tag .sub{
+    display:block; font-family:'Inter',sans-serif; font-size:11px; color:var(--text-muted);
+    margin-top:3px; white-space:nowrap;
+  }
+  .venn-tag.tag-users{top:1%; left:50%; transform:translateX(-50%);}
+  .venn-tag.tag-context{bottom:1%; left:2%; text-align:left;}
+  .venn-tag.tag-content{bottom:1%; right:2%; text-align:right;}
+
+  .venn-center{
+    position:absolute; z-index:2; top:57%; left:50%; transform:translate(-50%,-50%);
+    text-align:center; font-family:'Space Grotesk',sans-serif; font-weight:700; color:#fff;
+    font-size:clamp(15px,3.2vw,20px); line-height:1.25;
+  }
+
+  .venn-card{
+    position:absolute; z-index:3;
+    background:#0d0d11; border:1px solid rgba(140,92,245,0.5); border-radius:8px;
+    padding:12px 14px; width:32%; box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  }
+  .venn-card .num{
+    width:20px; height:20px; border-radius:50%; border:1px solid var(--purple);
+    color:var(--purple-soft); font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; margin-bottom:8px;
+  }
+  .venn-card .title{font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; color:var(--text); margin-bottom:5px;}
+  .venn-card .desc{font-family:'Inter',sans-serif; font-size:11px; color:var(--text-muted); line-height:1.42;}
+
+  .venn-card.c1{top:11%; left:50%; transform:translateX(-50%); width:34%;}
+  .venn-card.c2{top:33%; left:23%;}
+  .venn-card.c3{top:33%; right:23%;}
+  .venn-card.c4{bottom:6%; left:50%; transform:translateX(-50%); width:32%;}
+
+  /* challenges: sticky-note cards */
+  .challenges-notes{display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:20px;}
+  .note-stack{position:relative; height:150px;}
+  .note-base{
+    position:absolute; top:0; left:0; width:78%; height:104px;
+    background:#dcdcdc; color:#17171a;
+    padding:16px; border-radius:3px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.35);
+  }
+  .note-sticky{
+    position:absolute; bottom:6px; right:0; width:64%;
+    background:#d7fac2; color:#17171a;
+    padding:14px 16px; border-radius:3px;
+    transform:rotate(-6deg);
+    box-shadow:0 6px 16px rgba(0,0,0,0.4);
+  }
+  .note-label{
+    font-family:'Inter',sans-serif; font-size:10.5px; text-transform:uppercase;
+    letter-spacing:0.06em; opacity:0.6; margin-bottom:4px;
+  }
+  .note-body{font-family:'Patrick Hand',cursive; font-size:19px; line-height:1.3; letter-spacing:0.01em;}
+
+  /* impact badge */
+  .impact-badge{
+    display:inline-flex; align-items:center; gap:9px;
+    background:var(--bg-elevated); border:1px solid var(--line);
+    border-radius:100px; padding:9px 16px;
+    font-size:13.5px; color:var(--purple-soft); margin-top:6px;
+  }
+  .pulse-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--purple); flex:none;
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(140,92,245,0.55);}
+    70%{box-shadow:0 0 0 8px rgba(140,92,245,0);}
+    100%{box-shadow:0 0 0 0 rgba(140,92,245,0);}
+  }
+
+  @media (max-width:640px){
+    .venn-diagram{aspect-ratio:auto; height:auto;}
+    .venn-circle,.venn-tag{display:none;}
+    .venn-center{position:static; transform:none; margin-bottom:16px;}
+    .venn-card{position:static; width:100%; margin-bottom:12px; transform:none;}
+    .pipeline{grid-template-columns:1fr; gap:22px;}
+    .pipeline::before{display:none;}
+    .loop-diagram{aspect-ratio:auto; height:auto;}
+    .loop-ring{display:none;}
+    .loop-center{position:static; transform:none; margin:0 auto 16px;}
+    .loop-card{position:static; width:100%; margin-bottom:12px; transform:none;}
+    .tree{column-gap:5px;}
+    .tree-node{font-size:10px; padding:8px 4px;}
+    .challenges-notes{grid-template-columns:1fr; gap:56px;}
+  }
+
+  .vcs-root a{color:var(--purple-soft); text-decoration:underline; text-underline-offset:2px;}
+  .vcs-root a:hover{color:#fff;}
+
+  /* pipeline (Aloha Next) */
+  .pipeline{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; position:relative; margin-top:22px;}
+  .pipeline::before{content:""; position:absolute; top:15px; left:0; right:0; height:1px; background:var(--line);}
+  .pipeline-step{position:relative;}
+  .pipeline-num{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--bg); border:1px solid var(--purple); color:var(--purple-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;
+    position:relative; z-index:1; margin-bottom:10px;
+  }
+  .pipeline-title{font-weight:600; font-size:13.5px; color:var(--text); margin-bottom:4px;}
+  .pipeline-desc{font-size:12px; color:var(--text-muted); line-height:1.45;}
+
+  /* loop diagram (Launch & Synthesis) */
+  .loop-diagram{position:relative; width:100%; max-width:560px; aspect-ratio:1/0.92; margin:26px auto 8px;}
+  .loop-ring{
+    position:absolute; top:50%; left:50%; width:60%; height:60%;
+    transform:translate(-50%,-50%); border-radius:50%;
+    border:1.5px dashed var(--line);
+  }
+  .loop-center{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:96px; height:96px; border-radius:50%;
+    background:linear-gradient(135deg, var(--purple), #6a3fd6);
+    color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-size:20px; text-align:center; z-index:2;
+  }
+  .loop-center span{font-family:'IBM Plex Mono',monospace; font-size:9.5px; margin-top:4px; line-height:1.2; text-transform:uppercase; letter-spacing:0.04em;}
+  .loop-card{
+    position:absolute; z-index:3; width:40%;
+    background:#0d0d11; border:1px solid rgba(140,92,245,0.5); border-radius:8px;
+    padding:12px 14px; box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  }
+  .loop-card.top{top:0; left:50%; transform:translateX(-50%);}
+  .loop-card.right{top:50%; right:0; transform:translateY(-50%);}
+  .loop-card.bottom{bottom:0; left:50%; transform:translateX(-50%);}
+  .loop-card.left{top:50%; left:0; transform:translateY(-50%);}
+
+  /* SKILLS FOOTER */
+  .skills{
+    padding:40px;
+  }
+  .skills h3{font-size:16px; margin-bottom:16px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--text);
+    background:var(--bg-elevated);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:100px;
+  }
+
+  @media (max-width:640px){
+    .hero{padding:52px 20px 40px;}
+    .stats{grid-template-columns:1fr;}
+    .stat{border-right:none; border-bottom:1px solid var(--line);}
+    .project{grid-template-columns:1fr; padding:32px 20px;}
+    .skills{padding:32px 20px;}
+  }
+</style>
+
+<div class="vcs-root">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">NCR Voyix — UX Research</div>
+      <h1>Structuring the platform behind unified commerce</h1>
+      <p class="role">Shreya Pabalkar · UX Researcher · Ongoing</p>
+      <p class="blurb">NCR Voyix is a <strong>platform-powered leader in unified commerce</strong> for retail and restaurants — powering <strong>$1.4T</strong> in annual transaction volume and the <strong>#1 POS and self-checkout software</strong> worldwide. My work sits inside that platform: shaping the research, information architecture, and AI-assisted workflows behind products like Voyix Central, Aloha Next, and Pulse.</p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num">3</div>
+      <div class="label">Active research &amp; IA initiatives</div>
+    </div>
+    <div class="stat">
+      <div class="num">4+</div>
+      <div class="label">Cross-functional teams partnered with</div>
+    </div>
+    <div class="stat">
+      <div class="num">2026</div>
+      <div class="label">Launch cycle informed by this work</div>
+    </div>
+  </div>
+
+  <div class="project deep-dive">
+    <div class="project-head">
+      <span class="eyebrow">Voyix Central</span>
+      <h2>Information architecture for a <a href="https://www.ncrvoyix.com/platform/restaurant-applications/operations" target="_blank" rel="noopener">new back office platform</a></h2>
+      <div class="status">In progress</div>
+    </div>
+
+    <div class="sub">
+      <h3 class="sub-title">Problem &amp; Goal</h3>
+      <p>Unifying the experience of <strong>8 legacy products</strong> into one back office platform — a <strong>single pane of glass</strong> for Voyix Central, replacing the fragmented tools operators currently switch between.</p>
+      <div class="tree">
+        <div class="tree-node top-1">Consumer Marketing</div>
+        <div class="tree-node top-2">Reporting</div>
+        <div class="tree-node top-3">Payments &amp; Finance</div>
+        <div class="tree-node top-4">Online Ordering</div>
+
+        <div class="connector top">
+          <span class="tick c1"></span><span class="tick c2"></span><span class="tick c3"></span><span class="tick c4"></span>
+          <span class="bus"></span><span class="stem"></span>
+        </div>
+
+        <div class="tree-node center">Voyix Central</div>
+
+        <div class="connector bottom">
+          <span class="tick c1"></span><span class="tick c2"></span><span class="tick c3"></span><span class="tick c4"></span>
+          <span class="bus"></span><span class="stem"></span>
+        </div>
+
+        <div class="tree-node bottom-1">Menu</div>
+        <div class="tree-node bottom-2">Inventory</div>
+        <div class="tree-node bottom-3">Labor</div>
+        <div class="tree-node bottom-4">POS Configurations</div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3 class="sub-title">Research Method &amp; Process</h3>
+
+      <div class="venn-diagram">
+        <div class="venn-circle users"></div>
+        <div class="venn-circle context"></div>
+        <div class="venn-circle content"></div>
+
+        <div class="venn-tag tag-users">
+          <span class="eyebrow">Users</span>
+          <span class="sub">Persona segregation</span>
+        </div>
+        <div class="venn-tag tag-context">
+          <span class="eyebrow">Context</span>
+          <span class="sub">PM scope validation</span>
+        </div>
+        <div class="venn-tag tag-content">
+          <span class="eyebrow">Content</span>
+          <span class="sub">Card sort prioritization</span>
+        </div>
+
+        <div class="venn-center">Voyix Central<br>IA</div>
+
+        <div class="venn-card c1">
+          <div class="num">1</div>
+          <div class="title">Segment by Persona</div>
+          <div class="desc">Separating capabilities across legacy products by who actually uses them.</div>
+        </div>
+        <div class="venn-card c2">
+          <div class="num">2</div>
+          <div class="title">Validate Scope</div>
+          <div class="desc">Validating each persona's capability set with product managers.</div>
+        </div>
+        <div class="venn-card c3">
+          <div class="num">3</div>
+          <div class="title">Card Sort &amp; Prioritize</div>
+          <div class="desc">Running card sorting with each persona to prioritize legacy capabilities.</div>
+        </div>
+        <div class="venn-card c4">
+          <div class="num">4</div>
+          <div class="title">Map to Modules</div>
+          <div class="desc">Rearranging capabilities into micro-frontend modules through iterative research.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3 class="sub-title">Challenges</h3>
+      <div class="challenges-notes">
+        <div class="note-stack">
+          <div class="note-base">
+            <div class="note-label">Challenge</div>
+            <div class="note-body">AI-accelerated development</div>
+          </div>
+          <div class="note-sticky">
+            <div class="note-label">What helped</div>
+            <div class="note-body">Good, collaborative team</div>
+          </div>
+        </div>
+        <div class="note-stack">
+          <div class="note-base">
+            <div class="note-label">Challenge</div>
+            <div class="note-body">Depth across 8 products</div>
+          </div>
+          <div class="note-sticky">
+            <div class="note-label">What helped</div>
+            <div class="note-body">AI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3 class="sub-title">Impact</h3>
+      <div class="impact-badge"><span class="pulse-dot"></span> Actively designing the IA — directly informing platform development.</div>
+    </div>
+  </div>
+
+  <div class="project deep-dive">
+    <div class="project-head">
+      <span class="eyebrow">Aloha Next</span>
+      <h2>Mobile research, design &amp; IA</h2>
+      <div class="status">Ongoing</div>
+    </div>
+    <p style="color:var(--text-muted); font-size:14.5px; max-width:640px; margin-top:10px;">Building the research foundation and IA for Aloha Next's mobile experience — recruiting participants through <strong>Dscout</strong> to run discovery research alongside ongoing design and IA work.</p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-num">1</div>
+        <div class="pipeline-title">Recruit via Dscout</div>
+        <div class="pipeline-desc">Sourcing 5–7 customers across varied backgrounds for discovery research.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">2</div>
+        <div class="pipeline-title">Discovery Interviews</div>
+        <div class="pipeline-desc">Surfacing mobile usability issues directly from customers.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">3</div>
+        <div class="pipeline-title">Synthesize &amp; Prioritize</div>
+        <div class="pipeline-desc">Turning findings into opportunities, shared with Pulse for prioritization.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">4</div>
+        <div class="pipeline-title">Wireframe &amp; Iterate</div>
+        <div class="pipeline-desc">Building wireframes for rapid testing, iterating on customer and stakeholder feedback.</div>
+      </div>
+    </div>
+
+    <div class="impact-badge" style="margin-top:22px;"><span class="pulse-dot"></span> Continuously referenced in roadmap and planning discussions; findings actively shaping product decisions.</div>
+  </div>
+
+  <div class="project deep-dive" style="border-bottom:1px solid var(--line);">
+    <div class="project-head">
+      <span class="eyebrow">Launch &amp; Synthesis</span>
+      <h2>Launch research &amp; AI-assisted synthesis tooling</h2>
+      <div class="status">Ongoing · 2026 launches</div>
+    </div>
+    <p style="color:var(--text-muted); font-size:14.5px; max-width:640px; margin-top:10px;">Running end-to-end research across the 2026 launch lifecycle while building the AI-assisted tooling that turns those findings into action faster — a continuous loop feeding back into every new launch.</p>
+
+    <div class="loop-diagram">
+      <div class="loop-ring"></div>
+      <div class="loop-center">⟳<span>Ongoing<br>Cycle</span></div>
+
+      <div class="loop-card top">
+        <div class="num">1</div>
+        <div class="title">Launch Research</div>
+        <div class="desc">Running research at each stage of the 2026 launch lifecycle with Sales and Product, delivering insights via an interim plugin and Dovetail reports.</div>
+      </div>
+      <div class="loop-card right">
+        <div class="num">2</div>
+        <div class="title">AI-Assisted Synthesis</div>
+        <div class="desc">Using GitHub Copilot + Figma MCP and a custom Figma plugin to aggregate and organize insights faster.</div>
+      </div>
+      <div class="loop-card bottom">
+        <div class="num">3</div>
+        <div class="title">Prioritization Framework</div>
+        <div class="desc">Ranking insights by customer impact, frequency, and business value.</div>
+      </div>
+      <div class="loop-card left">
+        <div class="num">4</div>
+        <div class="title">Share &amp; Iterate</div>
+        <div class="desc">Feeding learnings back to the team and into the next round of launch research.</div>
+      </div>
+    </div>
+
+    <div class="impact-badge" style="margin-top:22px;"><span class="pulse-dot"></span> Research continues to inform launch and readiness reviews, with an AI-assisted plugin actively speeding up synthesis under a shared prioritization framework.</div>
+  </div>
+
+  <div class="skills">
+    <h3>Skills &amp; Tools</h3>
+    <div class="chips">
+      <span class="chip">Information Architecture</span>
+      <span class="chip">Stakeholder Alignment</span>
+      <span class="chip">Customer Research</span>
+      <span class="chip">Usability Testing</span>
+      <span class="chip">AI Evaluation</span>
+      <span class="chip">Figma</span>
+      <span class="chip">Dovetail</span>
+      <span class="chip">Figma MCP</span>
+      <span class="chip">GitHub Copilot</span>
+    </div>
+  </div>
+
+</div>

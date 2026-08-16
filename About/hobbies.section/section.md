@@ -1,10 +1,13 @@
 title: When I'm not designing
-caption: **I make things with my hands** — painting, art & DIY.
+caption: A peek into what I get up to outside of design.
 
 # Images
 
-- IMG_3859.JPG | Art project
-- 54486401862_1a381351c1_k.jpeg | Photography
-- IMG_1047.jpeg | DIY project
-- IMG_1759429629192.jpeg | Craft work
-- IMG_7114.jpeg | More art
+- Appreciating art.jpeg | Appreciating art
+- Climbing rocks.jpeg | Climbing rocks
+- Creating content.jpeg | Creating content
+- Gymming.jpeg | Gymming
+- Hiking.JPG | Hiking
+- In a photoshoot.JPG | In a photoshoot
+- Touching grass.jpeg | Touching grass
+- Travelling.jpeg | Travelling

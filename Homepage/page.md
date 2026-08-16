@@ -1,15 +1,10 @@
 # Hero
 
-photo: meee-cutout.png
-label: About
+photo: meee.jpeg
+label: Who is she?
 title: Hi, I’m Shreya
-tagline: A UX Designer turning bizarre ideas into beautifully organized realities.
-about: UX Researcher & Designer with 2+ years of experience turning qualitative and quantitative research into product decisions — currently improving restaurant tech experiences at NCR Voyix in Atlanta.
+tagline: I make decisions so users don't have to.
+about: UX generalist with 3 years of experience in UX Research and Design turning qualitative and quantitative research into products. 
+Currently at NCR Voyix in Atlanta, designing the software running quietly behind your restaurant order.
 location: Atlanta, GA
 mug: coffee-cutout.png
-
-# How I shape user experiences
-
-- 🔍 | Decoding the Unknown | dive into the heart of the issue, to understand every nuance.
-- 🖌️ | Crafting artful experiences | data meets inspiration, blending function with aesthetics.
-- 👍 | Mastering the Details | a relentless pursuit of perfection.

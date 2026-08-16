@@ -3,7 +3,5 @@ caption: Skateboarding, hikes, and **chasing sunsets**.
 
 # Images
 
-- IMG_0410.jpeg | Outdoors
-- IMG_4289.JPG | Hiking
-- IMG_6573.jpeg | Adventure
-- cpm35 2023-11-22 161356.307.jpg | Skateboarding
+Not currently used (the About carousel now sources only from hobbies.section) —
+drop images in this folder and list them here if you want it back in the mix.

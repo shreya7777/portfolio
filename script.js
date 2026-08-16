@@ -2,15 +2,14 @@
    Markdown-driven portfolio.
    Content lives in .md files next to the images they describe:
      site.md                          — global (socials, resume, footer)
-     Homepage/page.md                 — hero, currently, how-I-work
-     Homepage/skills.section/section.md
+     Homepage/page.md                 — hero (photo, title, tagline, about, mug)
+     Homepage/chat.section/section.md — chat widget greeting + canned replies
      Homepage/tools.section/section.md
      Homepage/brands.section/section.md
      About/page.md                    — story, experience, vision, sidebar
      About/hobbies.section/section.md
      About/outdoor.section/section.md
      Work/page.md                     — project list + timeline
-     Work/testimonials.section/section.md
      Work/<Project>/project.md        — one per project folder
    Edit a .md file, refresh the browser. See README.md for formats.
    ============================================================ */
@@ -19,7 +18,9 @@
 
 async function loadMD(path) {
   try {
-    const res = await fetch(encodeURI(path));
+    // no-store: these small text files change often while editing content,
+    // and a stale cached copy is a worse failure mode than an extra fetch.
+    const res = await fetch(encodeURI(path), { cache: "no-store" });
     if (!res.ok) return null;
     return await res.text();
   } catch {
@@ -103,6 +104,71 @@ function imgFallback(imgEl, emoji) {
 /* ---------- global state ---------- */
 
 const PROJECTS = []; // {slug, folder, title, category, emoji, tint, cover}
+let siteEmail = "";
+let spotifyUrl = "";
+
+/* ---------- sound engine (Web Audio API, unlocks on first user gesture) ---------- */
+
+const SFX_FILES = {
+  paper: "sfx/paper-turn.wav",
+  brew: "sfx/coffee-brew.wav",
+  send: "sfx/imessage-send.wav",
+  receive: "sfx/imessage-receive.wav",
+};
+let audioCtx = null;
+const sfxBuffers = {};
+
+function ensureAudioCtx() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+  }
+  if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+  return audioCtx;
+}
+document.addEventListener("pointerdown", ensureAudioCtx, { once: true });
+document.addEventListener("keydown", ensureAudioCtx, { once: true });
+
+async function loadSfx(name) {
+  if (sfxBuffers[name]) return sfxBuffers[name];
+  const ctx = ensureAudioCtx();
+  if (!ctx) return null;
+  try {
+    const res = await fetch(SFX_FILES[name]);
+    const arr = await res.arrayBuffer();
+    const buf = await ctx.decodeAudioData(arr);
+    sfxBuffers[name] = buf;
+    return buf;
+  } catch {
+    return null;
+  }
+}
+// warm the cache so the first hover/click isn't the one paying the fetch cost
+Object.keys(SFX_FILES).forEach((name) => {
+  fetch(SFX_FILES[name]).then((r) => r.arrayBuffer()).then((arr) => {
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    ctx.decodeAudioData(arr).then((buf) => { sfxBuffers[name] = buf; }).catch(() => {});
+  }).catch(() => {});
+});
+
+async function playSfx(name, { volume = 0.6 } = {}) {
+  const ctx = ensureAudioCtx();
+  if (!ctx) return;
+  const buf = sfxBuffers[name] || (await loadSfx(name));
+  if (!buf) return;
+  try {
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const gain = ctx.createGain();
+    gain.gain.value = volume;
+    src.connect(gain).connect(ctx.destination);
+    src.start(0);
+  } catch {
+    /* autoplay blocked or unsupported — fail silently */
+  }
+}
 
 /* ---------- renderers ---------- */
 
@@ -110,6 +176,8 @@ function renderSite(text) {
   if (!text) return;
   const sec = mdSections(text);
   const kv = mdKV(sec[""] || text);
+  siteEmail = kv.email || "";
+  spotifyUrl = kv.spotify || "";
   const links = {
     linkedin: kv.linkedin,
     email: kv.email ? "mailto:" + kv.email : null,
@@ -122,7 +190,7 @@ function renderSite(text) {
   if (kv.resume)
     document.querySelectorAll("[data-resume]").forEach((a) => (a.href = encodeURI(kv.resume)));
 
-  const chatKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("chat"));
+  const chatKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("chat about"));
   if (chatKey) {
     const wrap = document.getElementById("chat-chips");
     wrap.replaceChildren(...mdBullets(sec[chatKey]).map(([c]) => el("span", null, inlineMD(c))));
@@ -146,31 +214,8 @@ function renderHomepage(text) {
   if (hero.location) document.getElementById("map-label").textContent = hero.location;
   if (hero.mug) {
     const mug = document.getElementById("hero-mug");
-    mug.hidden = false;
     mug.src = encodeURI("Homepage/tools.section/" + hero.mug);
   }
-
-  const howKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("how"));
-  if (howKey) {
-    document.getElementById("how-label").textContent = howKey;
-    const how = document.getElementById("how");
-    how.replaceChildren(
-      ...mdBullets(sec[howKey]).map(([icon, title, txt]) => {
-        const d = el("div", "how-col");
-        d.append(el("span", "how-icon", esc(icon)), el("h3", null, inlineMD(title || "")), el("p", null, inlineMD(txt || "")));
-        return d;
-      })
-    );
-  }
-}
-
-function renderSkills(text) {
-  if (!text) return;
-  const sec = mdSections(text);
-  const body = sec["Skills"] ?? sec[""];
-  document
-    .getElementById("skills")
-    .replaceChildren(...mdBullets(body).map(([s]) => el("span", "skill-chip", inlineMD(s))));
 }
 
 function renderTools(text) {
@@ -188,9 +233,13 @@ function renderTools(text) {
       span.append(img);
       return span;
     });
-  document.getElementById("tools-home").replaceChildren(...make());
-  document.getElementById("tools-about").replaceChildren(...make());
+  const homeRow = document.getElementById("tools-home");
+  const mugEl = document.getElementById("mug-wrap"); // preserve — replaceChildren would otherwise discard it
+  homeRow.replaceChildren(...make());
+  if (mugEl) homeRow.append(mugEl);
 }
+
+let brandsTimer = null;
 
 function renderBrands(text) {
   if (!text) return;
@@ -198,34 +247,151 @@ function renderBrands(text) {
   const key = Object.keys(sec).find((k) => k) || "";
   if (key) document.getElementById("brands-label").textContent = key;
   const items = mdBullets(sec[key] ?? sec[""]);
-  const makeCards = () =>
-    items.map(([file, name]) => {
+  const track = document.getElementById("brands");
+  track.replaceChildren(
+    ...items.map(([file, name]) => {
       const span = el("span", "brand-card");
       const img = document.createElement("img");
       img.alt = name || file;
       imgFallback(img, "🏷️");
-      img.src = encodeURI("Homepage/brands.section/" + file);
+      img.src = encodeURI("Homepage/transparent logos/" + file);
       span.append(img);
       return span;
+    })
+  );
+
+  // step carousel: every 1s, slide to the next logo; wraps back to the start
+  const viewport = track.closest(".marquee");
+  if (!viewport) return;
+  let index = 0;
+  function step() {
+    const cards = [...track.children];
+    if (!cards.length) return;
+    index++;
+    if (index >= cards.length) {
+      index = 0;
+      viewport.scrollTo({ left: 0, behavior: "auto" });
+      return;
+    }
+    viewport.scrollTo({ left: cards[index].offsetLeft, behavior: "smooth" });
+  }
+  if (brandsTimer) clearInterval(brandsTimer);
+  brandsTimer = setInterval(step, 1000);
+  viewport.addEventListener("mouseenter", () => clearInterval(brandsTimer));
+  viewport.addEventListener("mouseleave", () => {
+    clearInterval(brandsTimer);
+    brandsTimer = setInterval(step, 1000);
+  });
+}
+
+/* ---------- chat widget ---------- */
+
+const chatState = { greeting: "Hi!" };
+
+function renderChat(text) {
+  if (!text) return;
+  const sec = mdSections(text);
+  const kv = mdKV(sec[""] || "");
+  if (kv.greeting) chatState.greeting = kv.greeting;
+  initChat();
+}
+
+function chatBubble(dir, text) {
+  const row = el("div", "chat-row chat-" + dir);
+  if (dir === "in") {
+    const avatarSrc = document.getElementById("hero-photo").getAttribute("src");
+    const av = document.createElement("img");
+    av.className = "chat-avatar";
+    av.alt = "";
+    if (avatarSrc) av.src = avatarSrc;
+    row.append(av);
+  }
+  row.append(el("div", "chat-bubble", inlineMD(text)));
+  return row;
+}
+
+function initChat() {
+  const thread = document.getElementById("chat-thread");
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("chat-send");
+  const card = document.getElementById("chat-card");
+  if (!thread || !form) return;
+
+  thread.replaceChildren(chatBubble("in", chatState.greeting));
+  input.disabled = true;
+  sendBtn.disabled = true;
+
+  let introStarted = false;
+  let exchanged = false; // one text input from the visitor, then the thread is done
+
+  input.addEventListener("input", () => {
+    sendBtn.disabled = !input.value.trim();
+  });
+
+  function startIntro() {
+    if (introStarted) return;
+    introStarted = true;
+    thread.append(chatBubble("out", "Yes, definitely!"));
+    thread.scrollTop = thread.scrollHeight;
+    playSfx("send", { volume: 0.5 });
+    window.setTimeout(() => {
+      thread.append(chatBubble("in", "What's your name?"));
+      thread.scrollTop = thread.scrollHeight;
+      playSfx("receive", { volume: 0.45 });
+      input.disabled = false;
+      input.focus();
+    }, 500);
+  }
+  if (card) card.addEventListener("click", startIntro);
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (exchanged || input.disabled) return;
+    const msg = input.value.trim();
+    if (!msg) return;
+    thread.append(chatBubble("out", esc(msg)));
+    playSfx("send", { volume: 0.6 });
+    input.value = "";
+    input.disabled = true;
+    sendBtn.disabled = true;
+    exchanged = true;
+    input.placeholder = "That's all for now!";
+    thread.scrollTop = thread.scrollHeight;
+  });
+}
+
+/* ---------- resume + mug micro-interactions ---------- */
+
+function initMicroInteractions() {
+  const resumeLink = document.getElementById("resume-link");
+  if (resumeLink) {
+    resumeLink.addEventListener("click", () => {
+      playSfx("paper", { volume: 0.55 });
+      resumeLink.classList.remove("flipping");
+      void resumeLink.offsetWidth; // restart the animation on repeat clicks
+      resumeLink.classList.add("flipping");
     });
-  // two identical halves so the marquee animation (translateX -50%) loops seamlessly
-  document.getElementById("brands").replaceChildren(...makeCards(), ...makeCards());
+  }
+  const mugWrap = document.getElementById("mug-wrap");
+  if (mugWrap) {
+    mugWrap.addEventListener("mouseenter", () => playSfx("brew", { volume: 0.5 }));
+    mugWrap.addEventListener("focus", () => playSfx("brew", { volume: 0.5 }));
+  }
 }
 
 function projectCard(p) {
   const a = el("a", "card project-card");
   a.href = "#work/" + p.slug;
-  a.style.background = p.tint || "var(--lavender)";
   const thumb = el("div", "project-thumb");
+  thumb.style.background = p.tint || "#E9D5F5";
   if (p.cover) {
     const img = document.createElement("img");
-    img.alt = p.title + " preview";
     img.loading = "lazy";
-    imgFallback(img, p.emoji || "🗂️");
-    img.src = encodeURI("Work/" + p.folder + "/" + p.cover);
+    img.alt = p.title;
+    imgFallback(img, "🖼️");
+    img.src = encodeURI(p.cover);
     thumb.append(img);
-  } else {
-    thumb.append(el("span", "thumb-emoji", esc(p.emoji || "🗂️")));
   }
   const meta = el("div", "project-meta");
   meta.innerHTML = `
@@ -234,9 +400,49 @@ function projectCard(p) {
         <path d="M7 17L17 7M9 7h8v8"/>
       </svg>
     </span>
-    <div><h3>${esc(p.title)}</h3><p>${esc(p.category || "")}</p></div>`;
+    <div><h3>${esc(p.title)}</h3></div>`;
   a.append(thumb, meta);
   return a;
+}
+
+// "## " blocks of key:value lines → [{quote, name, role}, …]
+function parseTestimonialBlocks(body) {
+  const blocks = [];
+  let buf = [];
+  const flush = () => {
+    if (buf.some((l) => l.trim())) blocks.push(mdKV(buf.join("\n")));
+    buf = [];
+  };
+  for (const line of (body || "").split("\n")) {
+    if (line.startsWith("## ")) flush();
+    else buf.push(line);
+  }
+  flush();
+  return blocks;
+}
+
+function testimonialCard(t) {
+  const card = el("div", "card box-a testimonial-card");
+  if (t && t.quote) {
+    card.append(el("p", "testimonial-quote", "“" + inlineMD(t.quote) + "”"));
+    const who = el("div", "testimonial-who");
+    if (t.name) who.append(el("p", "testimonial-name", esc(t.name)));
+    if (t.role) who.append(el("p", "testimonial-role", esc(t.role)));
+    card.append(who);
+  } else {
+    card.classList.add("testimonial-empty");
+    card.append(el("p", null, "A kind word from a teammate is on its way here."));
+  }
+  return card;
+}
+
+function renderTestimonials(text) {
+  const sec = mdSections(text || "");
+  const key = Object.keys(sec).find((k) => k.toLowerCase() === "testimonials");
+  const blocks = parseTestimonialBlocks(sec[key] ?? "").filter((b) => Object.keys(b).length);
+  while (blocks.length < 3) blocks.push({});
+  const wrap = document.getElementById("testimonials");
+  if (wrap) wrap.replaceChildren(...blocks.slice(0, 3).map(testimonialCard));
 }
 
 function renderWork(text) {
@@ -255,9 +461,16 @@ function renderWork(text) {
     p.slug = p.folder.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     PROJECTS.push(p);
   }
-  const cards = () => PROJECTS.map(projectCard);
-  document.getElementById("projects-home").replaceChildren(...cards());
-  document.getElementById("projects-work").replaceChildren(...cards());
+  document.getElementById("projects-work").replaceChildren(...PROJECTS.map(projectCard));
+
+  const featured = PROJECTS.filter((p) => (p.featured || "").toLowerCase() === "yes");
+  // two independent columns (see .projects-masonry in style.css) so cards can be
+  // different heights instead of forced into equal grid rows — alternate projects left/right.
+  const col1 = document.getElementById("projects-home-col1");
+  const col2 = document.getElementById("projects-home-col2");
+  col1.replaceChildren();
+  col2.replaceChildren();
+  featured.forEach((p, i) => (i % 2 === 0 ? col1 : col2).append(projectCard(p)));
 
   const tl = document.getElementById("timeline");
   tl.replaceChildren(
@@ -269,6 +482,17 @@ function renderWork(text) {
       return d;
     })
   );
+  positionTimelineConnector(tl);
+  window.addEventListener("resize", () => positionTimelineConnector(tl));
+}
+
+// aligns the .timeline::before connector line with the vertical center of the dots
+function positionTimelineConnector(tl) {
+  const dot = tl.querySelector(".tl-dot");
+  if (!dot) return;
+  const dotRect = dot.getBoundingClientRect();
+  const tlRect = tl.getBoundingClientRect();
+  tl.style.setProperty("--dot-y", dotRect.top - tlRect.top + dotRect.height / 2 + "px");
 }
 
 function renderAbout(text) {
@@ -291,68 +515,116 @@ function renderAbout(text) {
     else buf.push(line);
   }
   flush();
-
-  document.getElementById("about-experience").replaceChildren(
-    ...mdBullets(sec["Experience"]).map(([role, period]) => {
-      const li = document.createElement("li");
-      li.append(el("h3", null, inlineMD(role)), el("p", null, inlineMD(period || "")));
-      return li;
-    })
-  );
-
-  const vision = document.getElementById("about-vision");
-  const vKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("where"));
-  if (vKey) {
-    vision.replaceChildren(el("p", "card-label", esc(vKey)));
-    const kv = mdKV(sec[vKey]);
-    const paras = mdParas(sec[vKey].split("\n").filter((l) => !/^photo\s*:/i.test(l)).join("\n"));
-    if (paras[0]) vision.append(el("p", null, inlineMD(paras[0])));
-    if (kv.photo) {
-      const img = document.createElement("img");
-      img.className = "vision-photo";
-      img.alt = kv.alt || "Photo of Shreya";
-      imgFallback(img, "📷");
-      img.src = encodeURI("About/" + kv.photo);
-      vision.append(img);
-    }
-    for (const p of paras.slice(1)) vision.append(el("p", null, inlineMD(p)));
-  }
-
-  const bKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("what i do best"));
-  if (bKey) document.getElementById("about-best").innerHTML = inlineMD(mdParas(sec[bKey])[0] || "");
-
-  const mKey = Object.keys(sec).find((k) => k.toLowerCase().startsWith("more work"));
-  if (mKey) {
-    document.getElementById("about-morework").replaceChildren(
-      ...mdBullets(sec[mKey]).map(([name, period]) => {
-        const li = document.createElement("li");
-        li.append(el("h3", null, inlineMD(name)), el("p", null, inlineMD(period || "")));
-        return li;
-      })
-    );
-  }
 }
 
-function renderGallery(containerId, folder, text) {
-  const wrap = document.getElementById(containerId);
-  if (!text) { wrap.hidden = true; return; }
+// gallery .md → [{src, caption}, …], used to build the combined About carousel
+function parseGalleryItems(folder, text) {
+  if (!text) return [];
   const sec = mdSections(text);
-  const kv = mdKV(sec[""] ?? "");
-  wrap.replaceChildren();
-  if (kv.title) wrap.append(el("p", "card-label", esc(kv.title)));
-  const grid = el("div", "gallery-grid");
   const imgsKey = Object.keys(sec).find((k) => k.toLowerCase() === "images");
-  for (const [file, alt] of mdBullets(sec[imgsKey] ?? "")) {
-    const img = document.createElement("img");
-    img.loading = "lazy";
-    img.alt = alt || file;
-    imgFallback(img, "📷");
-    img.src = encodeURI(folder + "/" + file);
-    grid.append(img);
-  }
-  wrap.append(grid);
-  if (kv.caption) wrap.append(el("p", "gallery-caption", inlineMD(kv.caption)));
+  return mdBullets(sec[imgsKey] ?? "").map(([file, caption]) => ({
+    src: folder + "/" + file,
+    caption: caption || "",
+  }));
 }
+
+const ARROW_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
+const ARROW_RIGHT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+
+function renderCarousel(containerId, items) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  if (!items.length) { wrap.hidden = true; return; }
+
+  wrap.replaceChildren(el("p", "card-label", "When I'm not designing, I am"));
+
+  const stage = el("div", "carousel-stage");
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  imgFallback(img, "📷");
+  const prevBtn = el("button", "carousel-arrow carousel-prev", ARROW_LEFT);
+  prevBtn.type = "button";
+  prevBtn.setAttribute("aria-label", "Previous photo");
+  const nextBtn = el("button", "carousel-arrow carousel-next", ARROW_RIGHT);
+  nextBtn.type = "button";
+  nextBtn.setAttribute("aria-label", "Next photo");
+  stage.append(prevBtn, img, nextBtn);
+
+  const caption = el("p", "carousel-caption");
+  const dots = el("div", "carousel-dots");
+  items.forEach((_, i) => {
+    const dot = el("span", "carousel-dot");
+    dot.addEventListener("click", () => show(i));
+    dots.append(dot);
+  });
+
+  let idx = 0;
+  function show(i) {
+    idx = (i + items.length) % items.length;
+    img.src = encodeURI(items[idx].src);
+    img.alt = items[idx].caption || "";
+    caption.textContent = items[idx].caption || "";
+    [...dots.children].forEach((d, j) => d.classList.toggle("is-active", j === idx));
+  }
+  prevBtn.addEventListener("click", () => show(idx - 1));
+  nextBtn.addEventListener("click", () => show(idx + 1));
+  show(0);
+
+  wrap.append(stage, caption, dots);
+}
+
+// a Spotify share link → the embed src an oEmbed request for that link returns
+function spotifyEmbedUrl(url) {
+  const m = (url || "").match(/open\.spotify\.com\/(track|album|playlist|artist|episode|show)\/([a-zA-Z0-9]+)/);
+  return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=oembed` : null;
+}
+
+function renderSpotify() {
+  const card = document.getElementById("about-spotify");
+  if (!card) return;
+  card.replaceChildren(el("p", "card-label", "While listening to"));
+  const embedUrl = spotifyEmbedUrl(spotifyUrl);
+  if (embedUrl) {
+    const embed = el("div", "spotify-embed");
+    const iframe = document.createElement("iframe");
+    iframe.src = embedUrl;
+    iframe.title = "Spotify player";
+    iframe.loading = "lazy";
+    iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    embed.append(iframe);
+    card.append(embed);
+  } else {
+    const placeholder = el("div", "spotify-placeholder");
+    placeholder.append(el("p", null, "My playlist widget is coming soon — for now, just imagine the vibiest mix of everything."));
+    card.append(placeholder);
+  }
+}
+
+// pipe-field bullet blocks render as infographic card grids instead of a plain <ul>:
+// "- 20% | Label | description" (3 fields, numeric-looking first field) → big-number stat cards
+// "- Title | description" (2 fields) → feature/method cards
+// plain "- text" (no pipes) still renders as a normal <ul><li> list.
+function statGrid(fields) {
+  const grid = el("div", "stat-grid");
+  for (const [value, label, desc] of fields) {
+    const card = el("div", "stat-card");
+    card.append(el("p", "stat-value", esc(value)), el("p", "stat-label", inlineMD(label)));
+    if (desc) card.append(el("p", "stat-desc", inlineMD(desc)));
+    grid.append(card);
+  }
+  return grid;
+}
+function featureGrid(fields) {
+  const grid = el("div", "feature-grid");
+  for (const [title, body] of fields) {
+    const card = el("div", "feature-card");
+    card.append(el("h4", "feature-title", inlineMD(title)), el("p", null, inlineMD(body)));
+    grid.append(card);
+  }
+  return grid;
+}
+
+let projectScrollspyObserver = null;
 
 async function renderProject(slug) {
   const p = PROJECTS.find((x) => x.slug === slug);
@@ -361,24 +633,81 @@ async function renderProject(slug) {
   document.getElementById("project-category").textContent = p.category || "";
   const body = document.getElementById("project-body");
   const gallery = document.getElementById("project-gallery");
+  const layout = document.getElementById("project-layout");
+  // a project's own brand color (Work/page.md's `color` field) lightly accents
+  // this page — stat numbers, the active scrollspy tick — via the --brand var,
+  // falling back to the site's yellow when a project doesn't set one
+  if (p.color) layout.style.setProperty("--brand", p.color);
+  else layout.style.removeProperty("--brand");
+  const navEl = document.getElementById("project-nav");
+  const navList = document.getElementById("project-nav-list");
   body.replaceChildren();
   gallery.replaceChildren();
+  navList.replaceChildren();
+  if (projectScrollspyObserver) { projectScrollspyObserver.disconnect(); projectScrollspyObserver = null; }
 
   const text = await loadMD("Work/" + p.folder + "/project.md");
+  const sections = [];
   if (text) {
     const sec = mdSections(text);
     const main = sec[Object.keys(sec).find((k) => k && k.toLowerCase() !== "images")] ?? sec[""];
-    for (const block of (main || "").split(/\n\s*\n/)) {
-      const lines = block.trim().split("\n");
-      if (!lines[0]) continue;
-      if (lines.every((l) => l.trim().startsWith("- "))) {
-        const ul = document.createElement("ul");
-        for (const l of lines) ul.append(el("li", null, inlineMD(l.trim().slice(2))));
-        body.append(ul);
+
+    const flushBlocks = (container, blockText) => {
+      for (const block of blockText.split(/\n\s*\n/)) {
+        const lines = block.trim().split("\n");
+        if (!lines[0]) continue;
+        const imgMatch = lines.length === 1 && lines[0].match(/^!\[([^\]]*)\]\((.+)\)$/);
+        if (imgMatch) {
+          const img = document.createElement("img");
+          img.className = "project-inline-img";
+          img.loading = "lazy";
+          img.alt = imgMatch[1];
+          imgFallback(img, p.emoji || "🖼️");
+          img.src = encodeURI(imgMatch[2]);
+          container.append(img);
+        } else if (lines.every((l) => l.trim().startsWith("> "))) {
+          container.append(el("blockquote", null, lines.map((l) => inlineMD(l.trim().slice(2))).join("<br/>")));
+        } else if (lines.every((l) => l.trim().startsWith("- "))) {
+          const fields = mdBullets(block);
+          const fieldCount = fields[0].length;
+          const uniform = fields.every((f) => f.length === fieldCount);
+          if (uniform && fieldCount === 3 && /^[+\-$#]?\d/.test(fields[0][0])) {
+            container.append(statGrid(fields));
+          } else if (uniform && fieldCount === 2) {
+            container.append(featureGrid(fields));
+          } else {
+            const ul = document.createElement("ul");
+            for (const l of lines) ul.append(el("li", null, inlineMD(l.trim().slice(2))));
+            container.append(ul);
+          }
+        } else {
+          container.append(el("p", null, inlineMD(block.replace(/\n/g, " "))));
+        }
+      }
+    };
+
+    // "## " headings split the body into <section>s (used for the scrollspy nav below);
+    // content before any heading (if a project.md doesn't use them) goes straight into body.
+    let current = null;
+    let buf = [];
+    const flushCurrent = () => { flushBlocks(current ? current.el : body, buf.join("\n")); buf = []; };
+    for (const line of (main || "").split("\n")) {
+      if (line.startsWith("## ")) {
+        flushCurrent();
+        const label = line.slice(3).trim();
+        const id = "proj-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const secEl = el("section", "project-section");
+        secEl.id = id;
+        secEl.append(el("h3", "project-subhead", inlineMD(label)));
+        body.append(secEl);
+        current = { id, label, el: secEl };
+        sections.push(current);
       } else {
-        body.append(el("p", null, inlineMD(block.replace(/\n/g, " "))));
+        buf.push(line);
       }
     }
+    flushCurrent();
+
     const imgsKey = Object.keys(sec).find((k) => k.toLowerCase() === "images");
     for (const [file, alt] of mdBullets(sec[imgsKey] ?? "")) {
       const img = document.createElement("img");
@@ -390,6 +719,40 @@ async function renderProject(slug) {
     }
   } else {
     body.append(el("p", null, "Case study coming soon."));
+  }
+
+  // scrollspy nav — only shows up when the project.md actually has ## sections
+  if (sections.length) {
+    layout.classList.remove("no-nav");
+    navEl.hidden = false;
+    const buttons = sections.map((s, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = (i + 1) + ". " + s.label;
+      btn.dataset.target = s.id;
+      btn.addEventListener("click", () => {
+        document.getElementById(s.id).scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      const li = document.createElement("li");
+      li.append(btn);
+      navList.append(li);
+      return btn;
+    });
+    buttons[0].classList.add("is-active");
+    projectScrollspyObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            buttons.forEach((b) => b.classList.toggle("is-active", b.dataset.target === entry.target.id));
+          }
+        }
+      },
+      { rootMargin: "-120px 0px -65% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => projectScrollspyObserver.observe(document.getElementById(s.id)));
+  } else {
+    layout.classList.add("no-nav");
+    navEl.hidden = true;
   }
 }
 
@@ -429,27 +792,29 @@ window.addEventListener("hashchange", route);
 /* ---------- boot ---------- */
 
 (async function boot() {
-  const [site, home, skills, tools, brands, work, about, hobbies, outdoor] =
+  const [site, home, chat, tools, brands, work, about, hobbies, testimonials] =
     await Promise.all([
       loadMD("site.md"),
       loadMD("Homepage/page.md"),
-      loadMD("Homepage/skills.section/section.md"),
+      loadMD("Homepage/chat.section/section.md"),
       loadMD("Homepage/tools.section/section.md"),
       loadMD("Homepage/brands.section/section.md"),
       loadMD("Work/page.md"),
       loadMD("About/page.md"),
       loadMD("About/hobbies.section/section.md"),
-      loadMD("About/outdoor.section/section.md"),
+      loadMD("Work/testimonials.section/section.md"),
     ]);
 
   renderSite(site);
   renderHomepage(home);
-  renderSkills(skills);
+  renderChat(chat);
   renderTools(tools);
   renderBrands(brands);
   renderWork(work);
   renderAbout(about);
-  renderGallery("gallery-hobbies", "About/hobbies.section", hobbies);
-  renderGallery("gallery-outdoor", "About/outdoor.section", outdoor);
+  renderCarousel("about-carousel", parseGalleryItems("About/hobbies.section", hobbies));
+  renderSpotify();
+  renderTestimonials(testimonials);
+  initMicroInteractions();
   route();
 })();
