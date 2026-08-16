@@ -29,18 +29,15 @@ directly as a file won't load the md content.)
 |---|---|
 | `site.md` | Socials, email, resume link, footer "chat about" chips |
 | `Homepage/page.md` | Hero: photo, title, tagline, about paragraph, location, pop-out mug |
-| `Homepage/chat.section/section.md` | The chat widget's greeting + canned reply lines |
+| `Homepage/chat.section/section.md` | The chat widget's greeting line (the rest of the conversation is scripted in `initChat()` in `script.js`) |
 | `Homepage/tools.section/section.md` | Tool icons (images in that folder) |
 | `Homepage/brands.section/section.md` | Brand logos in the auto-scrolling carousel (images live in `Homepage/transparent logos/`) |
-| `About/page.md` | Only `# What I'm about` is rendered now (story card). The `Experience`, `Where I see me`, `What I do best`, and `More work` sections are still in the file but not shown anywhere — kept in case you want them back. |
-| `About/hobbies.section/section.md` | Feeds the one photo carousel on About — each image's `| caption` field is its filename-derived caption, arrows/dots included. (`About/outdoor.section/` is currently empty and unused — drop images in and list them there to bring it back into the mix, see `renderCarousel` call in `script.js`'s `boot()`.) |
+| `About/page.md` | The story card — `# What I'm about` with `## My story` / `## What I do now` subsections |
+| `About/hobbies.section/section.md` | Feeds the one photo carousel on About — each image's `| caption` field is its filename-derived caption, arrows/dots included |
 | `Work/page.md` | Project cards (`featured: yes` = also shown on Home, `tint` = thumbnail color, `cover` = image path shown instead of the flat tint) and the career timeline |
 | `Work/<Project>/project.md` | One per project folder: case-study text + image gallery |
 | `Work/testimonials.section/section.md` | 3 testimonial blocks (`quote`/`name`/`role`) shown at the bottom of Work — leave a block's `quote` empty to show a "coming soon" placeholder box |
 | `site.md`'s `spotify:` field | Paste a Spotify share/embed URL (e.g. `https://open.spotify.com/playlist/...`) here to make the About page's Spotify box live — `script.js`'s `spotifyEmbedUrl()` converts it to the oEmbed-equivalent `/embed/` iframe automatically |
-
-`Homepage/skills.section/` still has content but isn't rendered anywhere right now (the
-skills-chips box was dropped from the homepage redesign) — kept in case you want it back.
 
 ## Design system
 

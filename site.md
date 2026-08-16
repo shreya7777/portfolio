@@ -1,4 +1,3 @@
-name: Shreya Pabalkar
 email: shreyapabalkar@gmail.com
 linkedin: https://www.linkedin.com/in/shreya-pabalkar
 instagram: https://www.instagram.com/
