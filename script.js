@@ -106,6 +106,7 @@ function imgFallback(imgEl, emoji) {
 const PROJECTS = []; // {slug, folder, title, category, emoji, tint, cover}
 let siteEmail = "";
 let spotifyUrl = "";
+let chatCollectUrl = "";
 
 /* ---------- sound engine (Web Audio API, unlocks on first user gesture) ---------- */
 
@@ -178,6 +179,7 @@ function renderSite(text) {
   const kv = mdKV(sec[""] || text);
   siteEmail = kv.email || "";
   spotifyUrl = kv.spotify || "";
+  chatCollectUrl = kv.chat_collect || "";
   const links = {
     linkedin: kv.linkedin,
     email: kv.email ? "mailto:" + kv.email : null,
@@ -310,6 +312,16 @@ function chatBubble(dir, text) {
   return row;
 }
 
+// fire-and-forget: logs the visitor's name to a Google Sheet via an Apps Script
+// web app URL (site.md's chat_collect field). no-cors + form-encoded body so it
+// never triggers a CORS preflight the Apps Script endpoint can't answer; we can't
+// read the response, but the row still gets appended on the sheet's side.
+function submitChatResponse(name) {
+  if (!chatCollectUrl) return;
+  const body = new URLSearchParams({ name, page: location.href, when: new Date().toISOString() });
+  fetch(chatCollectUrl, { method: "POST", mode: "no-cors", body }).catch(() => {});
+}
+
 function initChat() {
   const thread = document.getElementById("chat-thread");
   const form = document.getElementById("chat-form");
@@ -352,6 +364,7 @@ function initChat() {
     if (!msg) return;
     thread.append(chatBubble("out", esc(msg)));
     playSfx("send", { volume: 0.6 });
+    submitChatResponse(msg);
     input.value = "";
     input.disabled = true;
     sendBtn.disabled = true;
