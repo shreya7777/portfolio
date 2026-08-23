@@ -331,14 +331,14 @@ function initChat() {
   if (!thread || !form) return;
 
   thread.replaceChildren(chatBubble("in", chatState.greeting));
-  input.disabled = true;
-  sendBtn.disabled = true;
+  sendBtn.disabled = true; // input stays enabled so clicking/focusing it can still trigger startIntro()
 
   let introStarted = false;
+  let readyForInput = false; // true once "What's your name?" has been asked
   let exchanged = false; // one text input from the visitor, then the thread is done
 
   input.addEventListener("input", () => {
-    sendBtn.disabled = !input.value.trim();
+    sendBtn.disabled = !readyForInput || !input.value.trim();
   });
 
   function startIntro() {
@@ -351,7 +351,7 @@ function initChat() {
       thread.append(chatBubble("in", "What's your name?"));
       thread.scrollTop = thread.scrollHeight;
       playSfx("receive", { volume: 0.45 });
-      input.disabled = false;
+      readyForInput = true;
       input.focus();
     }, 500);
   }
@@ -359,7 +359,7 @@ function initChat() {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (exchanged || input.disabled) return;
+    if (exchanged || !readyForInput) return;
     const msg = input.value.trim();
     if (!msg) return;
     thread.append(chatBubble("out", esc(msg)));
@@ -371,6 +371,11 @@ function initChat() {
     exchanged = true;
     input.placeholder = "That's all for now!";
     thread.scrollTop = thread.scrollHeight;
+    window.setTimeout(() => {
+      thread.append(chatBubble("in", `Nice to have you here, ${msg}. Enjoy the portfolio!`));
+      thread.scrollTop = thread.scrollHeight;
+      playSfx("receive", { volume: 0.45 });
+    }, 500);
   });
 }
 
