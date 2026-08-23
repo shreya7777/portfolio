@@ -643,6 +643,7 @@ function featureGrid(fields) {
 }
 
 let projectScrollspyObserver = null;
+let moreProjectsTimer = null;
 
 async function renderProject(slug) {
   const p = PROJECTS.find((x) => x.slug === slug);
@@ -699,18 +700,59 @@ async function renderProject(slug) {
             container.append(ul);
           }
         } else {
-          container.append(el("p", null, inlineMD(block.replace(/\n/g, " "))));
+          const text = block.replace(/\n/g, " ").trim();
+          const soloLabel = text.match(/^\*\*([^*]+:)\*\*$/); // paragraph is *only* a short bold label ending in ":", e.g. "**My work:**"
+          if (/^\*\*impact:?\*\*/i.test(text)) {
+            // "**Impact:** some sentence" gets wrapped in a highlighted callout card
+            const box = el("div", "callout-card");
+            box.append(el("p", null, inlineMD(text)));
+            container.append(box);
+          } else if (soloLabel) {
+            // a standalone bold label with nothing else in the paragraph reads as a mini-heading
+            container.append(el("p", "project-label", inlineMD(text)));
+          } else {
+            container.append(el("p", null, inlineMD(text)));
+          }
         }
       }
     };
 
     // "## " headings split the body into <section>s (used for the scrollspy nav below);
+    // "### " is a lighter in-section heading — no new section/nav entry, just a
+    // bigger label dropped into whatever section is currently open.
     // content before any heading (if a project.md doesn't use them) goes straight into body.
     let current = null;
     let buf = [];
     const flushCurrent = () => { flushBlocks(current ? current.el : body, buf.join("\n")); buf = []; };
+    // "::: row" / "::: col" / ":::" — an explicit, opt-in two-column layout: everything
+    // between "::: row" and "::: col" renders normally (paragraphs, stat grids, etc.)
+    // into a left column; everything between "::: col" and ":::" renders into the right
+    // column. Used sparingly, only where a project.md deliberately asks for it.
+    let rowMode = null; // null | "left" | "right"
+    let rowLeftBuf = [];
+    let rowRightBuf = [];
     for (const line of (main || "").split("\n")) {
-      if (line.startsWith("## ")) {
+      const trimmed = line.trim();
+      if (trimmed === "::: row") {
+        flushCurrent();
+        rowMode = "left";
+        rowLeftBuf = [];
+        rowRightBuf = [];
+      } else if (trimmed === "::: col" && rowMode) {
+        rowMode = "right";
+      } else if (trimmed === ":::" && rowMode) {
+        const row = el("div", "media-row");
+        const left = el("div", "media-row-text");
+        flushBlocks(left, rowLeftBuf.join("\n"));
+        row.append(left);
+        flushBlocks(row, rowRightBuf.join("\n")); // usually just a single image
+        (current ? current.el : body).append(row);
+        rowMode = null;
+      } else if (rowMode === "left") {
+        rowLeftBuf.push(line);
+      } else if (rowMode === "right") {
+        rowRightBuf.push(line);
+      } else if (line.startsWith("## ")) {
         flushCurrent();
         const label = line.slice(3).trim();
         const id = "proj-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -720,6 +762,9 @@ async function renderProject(slug) {
         body.append(secEl);
         current = { id, label, el: secEl };
         sections.push(current);
+      } else if (line.startsWith("### ")) {
+        flushCurrent();
+        (current ? current.el : body).append(el("h2", "project-subhead2", inlineMD(line.slice(4).trim())));
       } else {
         buf.push(line);
       }
@@ -771,6 +816,53 @@ async function renderProject(slug) {
   } else {
     layout.classList.add("no-nav");
     navEl.hidden = true;
+  }
+
+  // "More case studies" strip — every other featured-or-not project, small tiles
+  // in a single row with the same step-carousel behavior as the brands section.
+  if (moreProjectsTimer) { clearInterval(moreProjectsTimer); moreProjectsTimer = null; }
+  const moreTrack = document.getElementById("more-projects");
+  if (moreTrack) {
+    const others = PROJECTS.filter((x) => x.slug !== p.slug);
+    moreTrack.replaceChildren(
+      ...others.map((op) => {
+        const tile = el("a", "more-project-tile");
+        tile.href = "#work/" + op.slug;
+        const thumb = el("div", "more-project-thumb");
+        thumb.style.background = op.tint || "#E9D5F5";
+        if (op.cover) {
+          const img = document.createElement("img");
+          img.loading = "lazy";
+          img.alt = op.title;
+          imgFallback(img, "🖼️");
+          img.src = encodeURI(op.cover);
+          thumb.append(img);
+        }
+        tile.append(thumb, el("p", null, esc(op.title)));
+        return tile;
+      })
+    );
+    const viewport = moreTrack.closest(".card-more-projects");
+    let idx = 0;
+    function step() {
+      const tiles = [...moreTrack.children];
+      if (!tiles.length) return;
+      idx++;
+      if (idx >= tiles.length) {
+        idx = 0;
+        moreTrack.scrollTo({ left: 0, behavior: "auto" });
+        return;
+      }
+      moreTrack.scrollTo({ left: tiles[idx].offsetLeft, behavior: "smooth" });
+    }
+    moreProjectsTimer = setInterval(step, 1000);
+    if (viewport) {
+      viewport.addEventListener("mouseenter", () => clearInterval(moreProjectsTimer));
+      viewport.addEventListener("mouseleave", () => {
+        clearInterval(moreProjectsTimer);
+        moreProjectsTimer = setInterval(step, 1000);
+      });
+    }
   }
 }
 
