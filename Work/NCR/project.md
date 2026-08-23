@@ -14,15 +14,13 @@ About the company:
 ![An NCR Voyix POS terminal booting up](Work/NCR/POS.jpg)
 :::
 
-![A kitchen display screen I researched and designed for](Work/NCR/IMG_0924.jpeg)
-
 ### Focused work
 
 ## Back Office Management
 
 Unifying the experience of 8 legacy products into one back office platform — a single pane of glass experience. Capabilities span Marketing, Reporting, Payments & Finance, and Online Ordering into a unified structure covering Menu, Inventory, Labor, and POS Configurations.
 
-![An NCR Voyix POS terminal booting up](Work/NCR/POS.jpg)
+![A kitchen display screen I researched and designed for](Work/NCR/IMG_0924.jpeg)
 
 **My work:**
 
