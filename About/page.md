@@ -2,7 +2,7 @@
 
 ## My story
 
-Originally from India, I came to the United States driven by a deep-rooted passion for design. Art has been my constant companion since childhood, evolving alongside my growing interest in technology. This blend of creativity and tech sparked my journey into UX Design, where I strive to bridge functional innovation with user-centered artistry.
+I studied design and computer, driven by a deep-rooted passion for design. Art has been my constant companion since childhood, evolving alongside my growing interest in technology. This blend of creativity and tech sparked my journey into UX Design, where I strive to bridge functional innovation with user-centered artistry.
 
 ## What I do now
 
