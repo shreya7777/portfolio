@@ -4,9 +4,9 @@ Each project is a folder in Work/ with its own project.md.
 Fields: folder | title | category | featured (yes = shown on Home, always shown on Work) | tint (thumbnail color, used if no cover) | cover (image path, optional) | color (optional brand accent for that project's case-study page)
 
 - folder: NCR | title: NCR Voyix Case Study | category: Product Research and Design | featured: yes | tint: #E9D5F5 | cover: Homepage/covers/ncrvoyix.png | color: #5F259F
-- folder: wecollab | title: WeCollab | category: UX Research & Product Design | featured: yes | tint: #DCE4FF | cover: Homepage/covers/wecollab.png | color: #8C5CF5
-- folder: Vosyn | title: Vosyn Case Study | category: UX Research | featured: yes | tint: #CFF6FB | cover: Homepage/covers/Vosyn.png | color: #15BDFB
 - folder: Vibe-Coding | title: Vibe coding plugins and building workflows | category: Independent Project — AI Tooling | featured: yes | tint: #E6F5CB | cover: Homepage/covers/AI.png
+- folder: Vosyn | title: Vosyn Case Study | category: UX Research | featured: yes | tint: #CFF6FB | cover: Homepage/covers/Vosyn.png | color: #15BDFB
+- folder: wecollab | title: WeCollab | category: UX Research & Product Design | featured: yes | tint: #DCE4FF | cover: Homepage/covers/wecollab.png | color: #8C5CF5
 
 # Timeline
 
