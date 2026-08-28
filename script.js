@@ -652,6 +652,7 @@ function clientLogos(fields) {
     img.className = "client-logo-img";
     img.loading = "lazy";
     img.alt = m[1];
+    img.title = m[1];
     img.src = encodeURI(m[2]);
     row.append(img);
   }
