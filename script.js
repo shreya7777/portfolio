@@ -641,6 +641,23 @@ function featureGrid(fields) {
   }
   return grid;
 }
+// a bullet block where every line is only an image (no pipes) renders as a
+// bordered logo strip, e.g. for a "clients I work with day to day" list.
+function clientLogos(fields) {
+  const card = el("div", "client-logos-card");
+  const row = el("div", "client-logos-row");
+  for (const [line] of fields) {
+    const m = line.match(/^!\[([^\]]*)\]\((.+)\)$/);
+    const img = document.createElement("img");
+    img.className = "client-logo-img";
+    img.loading = "lazy";
+    img.alt = m[1];
+    img.src = encodeURI(m[2]);
+    row.append(img);
+  }
+  card.append(row);
+  return card;
+}
 
 let projectScrollspyObserver = null;
 let moreProjectsTimer = null;
@@ -694,6 +711,8 @@ async function renderProject(slug) {
             container.append(statGrid(fields));
           } else if (uniform && fieldCount === 2) {
             container.append(featureGrid(fields));
+          } else if (uniform && fieldCount === 1 && fields.every((f) => /^!\[([^\]]*)\]\((.+)\)$/.test(f[0]))) {
+            container.append(clientLogos(fields));
           } else {
             const ul = document.createElement("ul");
             for (const l of lines) ul.append(el("li", null, inlineMD(l.trim().slice(2))));

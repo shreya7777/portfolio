@@ -14,6 +14,14 @@ About the company:
 ![An NCR Voyix POS terminal booting up](Work/NCR/POS.jpg)
 :::
 
+### Clients I work with
+
+- ![Red Robin](Work/NCR/clients/red-robin.png)
+- ![Chuck E. Cheese's](Work/NCR/clients/chuck-e-cheese.png)
+- ![Chipotle](Work/NCR/clients/chipotle.png)
+- ![Buffalo Wild Wings](Work/NCR/clients/buffalo-wild-wings.png)
+- ![Coupa Café](Work/NCR/clients/coupa-cafe.png)
+
 ### Focused work
 
 ## Back Office Management
