@@ -693,15 +693,23 @@ async function renderProject(slug) {
       for (const block of blockText.split(/\n\s*\n/)) {
         const lines = block.trim().split("\n");
         if (!lines[0]) continue;
-        const imgMatch = lines.length === 1 && lines[0].match(/^!\[([^\]]*)\]\((.+)\)$/);
+        // "![alt](path)" is a standalone image; "![alt](path){wide}" spans the full column width (diagrams);
+        // '![alt](path "caption")' adds a caption that slides up over the photo on hover
+        const imgMatch = lines.length === 1 && lines[0].match(/^!\[([^\]]*)\]\((.+?)(?:\s+"([^"]*)")?\)(\{wide\})?$/);
         if (imgMatch) {
           const img = document.createElement("img");
-          img.className = "project-inline-img";
+          img.className = "project-inline-img" + (imgMatch[4] ? " is-wide" : "");
           img.loading = "lazy";
           img.alt = imgMatch[1];
           imgFallback(img, p.emoji || "🖼️");
           img.src = encodeURI(imgMatch[2]);
-          container.append(img);
+          if (imgMatch[3]) {
+            const fig = el("figure", "gallery-item inline-figure" + (imgMatch[4] ? " is-wide" : ""));
+            fig.append(img, el("figcaption", null, inlineMD(imgMatch[3])));
+            container.append(fig);
+          } else {
+            container.append(img);
+          }
         } else if (lines.every((l) => l.trim().startsWith("> "))) {
           container.append(el("blockquote", null, lines.map((l) => inlineMD(l.trim().slice(2))).join("<br/>")));
         } else if (lines.every((l) => l.trim().startsWith("- "))) {
@@ -778,7 +786,8 @@ async function renderProject(slug) {
         const id = "proj-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
         const secEl = el("section", "project-section");
         secEl.id = id;
-        secEl.append(el("h3", "project-subhead", inlineMD(label)));
+        // numbered to match the scrollspy nav ("3. UX Design")
+        secEl.append(el("h3", "project-subhead", (sections.length + 1) + ". " + inlineMD(label)));
         body.append(secEl);
         current = { id, label, el: secEl };
         sections.push(current);
@@ -792,13 +801,17 @@ async function renderProject(slug) {
     flushCurrent();
 
     const imgsKey = Object.keys(sec).find((k) => k.toLowerCase() === "images");
+    // "- file | caption" — the caption slides up over the photo on hover
     for (const [file, alt] of mdBullets(sec[imgsKey] ?? "")) {
       const img = document.createElement("img");
       img.loading = "lazy";
       img.alt = alt || file;
       imgFallback(img, p.emoji || "🖼️");
       img.src = encodeURI("Work/" + p.folder + "/" + file);
-      gallery.append(img);
+      const fig = el("figure", "gallery-item");
+      fig.append(img);
+      if (alt) fig.append(el("figcaption", null, inlineMD(alt)));
+      gallery.append(fig);
     }
   } else {
     body.append(el("p", null, "Case study coming soon."));

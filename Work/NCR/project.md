@@ -11,7 +11,7 @@ About the company:
 - #1 | POS & self-checkout | NCR Voyix is the top provider in the category.
 - 140 | Years of innovation | A platform with deep industry roots, still being rebuilt for an AI-driven future.
 ::: col
-![An NCR Voyix POS terminal booting up](Work/NCR/POS.jpg)
+![An NCR Voyix POS terminal booting up](Work/NCR/POS.jpg "NCR Voyix Next Gen POS")
 :::
 
 ### Clients I work with
@@ -31,7 +31,7 @@ About the company:
 
 Unifying the experience of 8 legacy products into one back office platform — a single pane of glass experience. Capabilities span Marketing, Reporting, Payments & Finance, and Online Ordering into a unified structure covering Menu, Inventory, Labor, and POS Configurations.
 
-![A kitchen display screen I researched and designed for](Work/NCR/IMG_0924.jpeg)
+![A kitchen display screen I researched and designed for](Work/NCR/IMG_0924.jpeg "Testing a live order in our lab")
 
 **My work:**
 
@@ -46,6 +46,22 @@ A good, collaborative team — and AI itself — were what got it done.
 
 **Impact:** Actively handing off the Information Architecture to developers for building the MVP — directly informing platform development.
 
+## UX Design
+
+I'm designing the mobile experience for the next-gen back office solution, focused on displaying real-time data and forecasting.
+
+**My approach:**
+
+![The design thinking process: empathize, define, ideate, prototype, test](Work/NCR/design-process.jpg){wide}
+
+- Researching Legacy Products | Start with the legacy products and ask users which features to retain and which new ones they would value.
+- Low-Fidelity Designs | Turn those insights into low-fidelity designs and present them to my product manager.
+- Prioritizing with Product | Agree on priorities with my product manager, then decide which features make the cut based on budget.
+- Mid-Fidelity & Customer Feedback | Design mid-fidelity screens, take them back to customers for feedback, and keep iterating.
+
+> The full design case study is password-protected — get in touch for access.
+
+**Impact:** Customers are curious to onboard onto the new application, and the sales team is starting to talk about it more.
 
 ## Launch Research
 
@@ -60,7 +76,7 @@ Running end-to-end research across the 2026 launch lifecycle while building the 
 
 **Impact:** Research continues to inform launch and readiness reviews, with an AI-assisted plugin actively speeding up synthesis under a shared prioritization framework.
 
-![Testing a hardware device in the field](Work/NCR/testing.jpg)
+![Testing a hardware device in the field](Work/NCR/testing.jpg "Testing the kitchen bump bar with a real customer")
 
 > Get in touch to know more about my work — an NDA only allows me to show this much.
 
@@ -76,6 +92,6 @@ Running end-to-end research across the 2026 launch lifecycle while building the 
 
 # Images
 
-- IMG_9073.jpeg | Outside the NCR Voyix office
+- IMG_9073.jpeg | My first week at the company
 - IMG_2610.jpeg | My desk between research sprints
 - field day.jpeg | A team field day, packing boxes for the community

@@ -550,7 +550,10 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .media-row-text > *:last-child { margin-bottom: 0; }
 .media-row-text .stat-grid { flex: 1; }
 .media-row .project-inline-img { margin: 0; }
+/* "{wide}" images (diagrams): full column width, bordered like the feature cards */
+.project-inline-img.is-wide { max-width: 100%; max-height: none; width: 100%; border: 2px solid var(--navy); background: var(--card); }
 .project-section { scroll-margin-top: 112px; }
+.project-section + .project-section { margin-top: 64px; }
 .project-subhead { font-family: "Montserrat", sans-serif; font-size: 19px; font-weight: 700; margin: 26px 0 12px; }
 .project-subhead:first-child { margin-top: 0; }
 /* "### " in-section heading — a lighter beat than .project-subhead's section titles,
@@ -613,6 +616,31 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   border: var(--border-w) solid var(--navy);
   display: block;
 }
+.gallery-item { position: relative; margin: 0; }
+.gallery-item figcaption {
+  position: absolute;
+  left: var(--border-w);
+  right: var(--border-w);
+  bottom: var(--border-w);
+  padding: 22px 14px 12px;
+  border-radius: 0 0 9px 9px;
+  background: linear-gradient(to top, rgba(27, 38, 79, 0.92), rgba(27, 38, 79, 0));
+  color: var(--cream);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+.gallery-item:hover figcaption { opacity: 1; transform: none; }
+/* an inline project image with a hover caption: the figure takes over the image's
+   box (width + margins) so the layout doesn't shift */
+.inline-figure { width: fit-content; max-width: 100%; margin: 4px 0 20px; }
+.inline-figure.is-wide { width: 100%; }
+.inline-figure .project-inline-img { margin: 0; }
+.media-row .inline-figure { margin: 0; align-self: start; }
 
 /* "More case studies" strip at the bottom of every project page — a single row,
    step-carousel behavior matching the brands section (see script.js) */
