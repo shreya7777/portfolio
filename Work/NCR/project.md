@@ -21,6 +21,9 @@ About the company:
 - ![Chipotle](Work/NCR/clients/chipotle.png)
 - ![Buffalo Wild Wings](Work/NCR/clients/buffalo-wild-wings.png)
 - ![Coupa Café](Work/NCR/clients/coupa-cafe.png)
+- ![Wendy's](Work/NCR/clients/wendys.png)
+- ![Bruster's](Work/NCR/clients/brusters.png)
+- ![Pizza Ranch](Work/NCR/clients/pizza-ranch.png)
 
 ### Focused work
 
