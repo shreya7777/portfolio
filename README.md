@@ -36,7 +36,7 @@ directly as a file won't load the md content.)
 | `About/hobbies.section/section.md` | Feeds the photo-and-video carousel on About — each `- file | caption` line is one slide, arrows/dots included. A `.mp4`, `.webm`, `.mov` or `.m4v` file becomes a video slide (play button, no autoplay, pauses when you move on); keep clips short and compressed, ideally under ~15 MB each |
 | `Work/page.md` | Project cards (`featured: yes` = also shown on Home, `tint` = thumbnail color, `cover` = image path shown instead of the flat tint) and the career timeline |
 | `Work/<Project>/project.md` | One per project folder: case-study text + image gallery |
-| `Work/testimonials.section/section.md` | 3 testimonial blocks (`quote`/`name`/`role`) shown at the bottom of Work — leave a block's `quote` empty to show a "coming soon" placeholder box |
+| `Work/testimonials.section/section.md` | 3 testimonial blocks (`quote`/`name`/`role`) shown at the bottom of Home and Work — leave a block's `quote` empty to show a "coming soon" placeholder box |
 | `site.md`'s `spotify:` field | Paste a Spotify share/embed URL (e.g. `https://open.spotify.com/playlist/...`) here to make the About page's Spotify box live — `script.js`'s `spotifyEmbedUrl()` converts it to the oEmbed-equivalent `/embed/` iframe automatically |
 
 ## Password-protected case study (NCR → UX Design)
@@ -139,8 +139,8 @@ with a live embedded player. Leave the field blank to keep the placeholder.
 ### Work page: testimonials
 
 `Work/testimonials.section/section.md` holds 3 `## ` blocks of `quote` / `name` / `role`. Fill in
-a block to show a real testimonial card; leave `quote` empty and that box shows a dashed
-"coming soon" placeholder instead — always keep exactly 3 blocks so the row of boxes stays even.
+a block to show a testimonial card; blocks with an empty `quote` are skipped, the cards lay
+themselves out for 1, 2 or 3 filled blocks, and the whole section hides when none are filled.
 
 ## Formats (quick reference)
 

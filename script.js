@@ -441,27 +441,34 @@ function parseTestimonialBlocks(body) {
 }
 
 function testimonialCard(t) {
-  const card = el("div", "card box-a testimonial-card");
-  if (t && t.quote) {
-    card.append(el("p", "testimonial-quote", "“" + inlineMD(t.quote) + "”"));
-    const who = el("div", "testimonial-who");
-    if (t.name) who.append(el("p", "testimonial-name", esc(t.name)));
-    if (t.role) who.append(el("p", "testimonial-role", esc(t.role)));
-    card.append(who);
-  } else {
-    card.classList.add("testimonial-empty");
-    card.append(el("p", null, "A kind word from a teammate is on its way here."));
-  }
+  const card = el("figure", "card box-a testimonial-card");
+  card.append(el("span", "testimonial-mark", "“"));
+  // " || " in the quote starts a new paragraph
+  const quote = el("blockquote", "testimonial-quote");
+  t.quote.split("||").map((p) => p.trim()).filter(Boolean).forEach((p) => quote.append(el("p", null, inlineMD(p))));
+  card.append(quote);
+  const who = el("figcaption", "testimonial-who");
+  const initials = (t.name || "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+  if (initials) who.append(el("span", "testimonial-avatar", esc(initials)));
+  const text = el("div", "testimonial-text");
+  if (t.name) text.append(el("p", "testimonial-name", esc(t.name)));
+  if (t.role) text.append(el("p", "testimonial-role", esc(t.role)));
+  who.append(text);
+  card.append(who);
   return card;
 }
 
+// only filled-in blocks are shown (1–3, laid out to fit); with none, the section stays hidden
 function renderTestimonials(text) {
   const sec = mdSections(text || "");
   const key = Object.keys(sec).find((k) => k.toLowerCase() === "testimonials");
-  const blocks = parseTestimonialBlocks(sec[key] ?? "").filter((b) => Object.keys(b).length);
-  while (blocks.length < 3) blocks.push({});
-  const wrap = document.getElementById("testimonials");
-  if (wrap) wrap.replaceChildren(...blocks.slice(0, 3).map(testimonialCard));
+  const blocks = parseTestimonialBlocks(sec[key] ?? "").filter((b) => b.quote && b.quote.trim()).slice(0, 3);
+  // the same cards sit at the bottom of both the home and Work pages
+  document.querySelectorAll("[data-testimonials]").forEach((wrap) => {
+    wrap.dataset.count = blocks.length;
+    wrap.replaceChildren(...blocks.map(testimonialCard));
+    wrap.closest(".testimonials-section").hidden = !blocks.length;
+  });
 }
 
 function renderWork(text) {

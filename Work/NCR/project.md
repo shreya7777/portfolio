@@ -3,7 +3,9 @@
 ## My Role
 
 ::: row
-I'm a UX Researcher at NCR Voyix, a platform-powered leader in unified commerce for retail and restaurants. My work sits inside that platform: shaping the research, information architecture, and AI-assisted workflows behind the next gen products Aloha Next. This is ongoing work, a running log of what I'm building, not a single finished case study.
+I'm a UX Researcher and Designer at NCR Voyix, a platform-powered leader in unified commerce for retail and restaurants. My work sits inside that platform: shaping the research, information architecture, and AI-assisted workflows behind the next gen products Aloha Next. I am also redesigning the Next Gen Mobile platform 'Pulse'.
+
+This is ongoing work, a running log of what I'm building, not a single finished case study.
 
 About the company:
 
