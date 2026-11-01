@@ -697,6 +697,18 @@ function showGate(slug, secure) {
   gate.hidden = false;
   err.hidden = true;
   input.value = "";
+  // show/hide the password while typing
+  const eye = document.getElementById("gate-eye");
+  input.type = "password";
+  eye.setAttribute("aria-pressed", "false");
+  eye.setAttribute("aria-label", "Show password");
+  eye.onclick = () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    eye.setAttribute("aria-pressed", String(show));
+    eye.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    input.focus();
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
     const pw = input.value;
@@ -704,12 +716,27 @@ function showGate(slug, secure) {
     btn.disabled = true;
     err.hidden = true;
     let bundle = null;
+    let usedPw = pw;
+    let loadFailed = false;
     try {
       const res = await fetch(encodeURI(secure.dataUrl), { cache: "no-store" });
-      if (res.ok) bundle = await decryptBundle(await res.arrayBuffer(), pw);
-    } catch { /* treated as a failed unlock below */ }
+      if (res.ok) {
+        const buf = await res.arrayBuffer();
+        bundle = await decryptBundle(buf, pw);
+        // a phone keyboard often adds a trailing space: retry without stray spaces
+        if (!bundle && pw.trim() !== pw) {
+          usedPw = pw.trim();
+          bundle = await decryptBundle(buf, usedPw);
+        }
+      } else {
+        loadFailed = true;
+      }
+    } catch { loadFailed = true; }
     btn.disabled = false;
     if (!bundle) {
+      err.textContent = loadFailed
+        ? "Couldn't load the case study. Check your connection and try again."
+        : "That's not the right password — try again.";
       err.hidden = false;
       form.classList.remove("is-wrong");
       void form.offsetWidth; // restart the shake on repeat tries
@@ -717,7 +744,7 @@ function showGate(slug, secure) {
       input.select();
       return;
     }
-    try { sessionStorage.setItem(SECURE_KEY + slug, pw); } catch { /* private mode: they'll just re-enter it */ }
+    try { sessionStorage.setItem(SECURE_KEY + slug, usedPw); } catch { /* private mode: they'll just re-enter it */ }
     renderProject(slug, bundle);
   };
   input.focus({ preventScroll: true });

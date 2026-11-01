@@ -918,9 +918,11 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .gate p { line-height: 1.6; font-weight: 500; color: var(--ink-soft); }
 .gate p a { color: var(--ink); font-weight: 700; }
 .gate-form { display: flex; gap: 10px; margin-top: 18px; }
+.gate-field { position: relative; flex: 1; min-width: 0; display: flex; }
 .gate-input {
   flex: 1;
   min-width: 0;
+  padding-right: 46px !important;
   font: inherit;
   font-weight: 500;
   color: var(--ink);
@@ -1035,3 +1037,16 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .project-table tbody tr:last-child td { border-bottom: none; }
 .project-table td:nth-child(2) { min-width: 180px; }
 .project-table td:nth-child(3) { min-width: 240px; }
+
+.gate-eye {
+  position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+  width: 32px; height: 32px; padding: 6px;
+  display: grid; place-items: center;
+  color: var(--ink-soft); background: none; border: none; border-radius: 8px; cursor: pointer;
+}
+.gate-eye:hover { color: var(--ink); background: rgba(27, 38, 79, 0.08); }
+.gate-eye:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
+.gate-eye svg { width: 20px; height: 20px; }
+.gate-eye .eye-off { display: none; }
+.gate-eye[aria-pressed="true"] .eye-open { display: none; }
+.gate-eye[aria-pressed="true"] .eye-off { display: block; }

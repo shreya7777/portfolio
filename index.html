@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=48" />
+  <link rel="stylesheet" href="style.css?v=49" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
 </head>
 <body>
@@ -161,7 +161,13 @@
             <h2>This case study is password-protected</h2>
             <p>Enter the password to read it. Don't have one? <a data-social="email" href="#">Get in touch</a> and I'll send it over.</p>
             <form class="gate-form" id="gate-form" autocomplete="off">
-              <input class="gate-input" id="gate-input" type="password" placeholder="Password" aria-label="Password" aria-describedby="gate-error" />
+              <div class="gate-field">
+                <input class="gate-input" id="gate-input" type="password" placeholder="Password" aria-label="Password" aria-describedby="gate-error" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+                <button class="gate-eye" id="gate-eye" type="button" aria-label="Show password" aria-pressed="false">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A10.7 10.7 0 0 1 12 6c6.4 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 7.6A17 17 0 0 0 2 12s3.6 6 10 6a10.5 10.5 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                </button>
+              </div>
               <button class="gate-btn" id="gate-btn" type="submit">Unlock</button>
             </form>
             <p class="gate-error" id="gate-error" role="alert" hidden>That's not the right password — try again.</p>
@@ -208,6 +214,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=42"></script>
+  <script src="script.js?v=43"></script>
 </body>
 </html>
