@@ -149,34 +149,37 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   grid-area: intro;
   position: relative;
   padding: 0;
+  container-type: inline-size; /* the text below scales with this card's width, so it fits at every window size */
 }
 .intro-body {
   height: 100%;
   overflow: hidden;
-  padding: 74px 30px 30px;
+  padding: 66px clamp(20px, 7cqw, 30px) 24px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 .card-intro .card-label {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 .card-intro h1 {
-  font-size: 36px;
+  font-size: clamp(25px, 9.2cqw, 36px);
   font-weight: 700;
   margin-bottom: 12px;
 }
 .intro-tagline {
   font-family: "Hind", sans-serif;
   font-style: italic;
-  font-size: 22px;
+  font-size: clamp(16px, 6cqw, 22px);
   font-weight: 600;
   line-height: 1.35;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
+/* ==highlight== in any md text — a yellow marker swipe */
+mark { background: var(--yellow); color: inherit; font-weight: 700; padding: 1px 6px; border-radius: 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .intro-about {
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: clamp(13px, 4.6cqw, 15px);
+  line-height: 1.55;
   font-weight: 500;
 }
 
@@ -187,7 +190,7 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   top: -26px;
   right: 30px;
   width: 118px;
-  padding: 22px 14px 12px;
+  padding: 22px 12px 12px;
   background: #FFFFFF;
   border: var(--border-w) solid var(--navy);
   border-radius: 10px;
@@ -214,6 +217,17 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   left: 14px;
   width: 20px;
   height: 30px;
+}
+.paper-kicker {
+  display: block;
+  font-family: "Hind", sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
 }
 .paper-title {
   display: block;
@@ -678,6 +692,10 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .about-secondary { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; align-items: stretch; }
 
 .card-story h2 { font-size: 25px; font-weight: 700; margin-bottom: 18px; }
+.card-story { display: flow-root; }
+.story-photo { float: right; width: 230px; margin: 4px 0 16px 28px; }
+.story-photo img { display: block; width: 100%; height: auto; border: var(--border-w) solid var(--navy); border-radius: 14px; background: var(--card); }
+@media (max-width: 640px) { .story-photo { float: none; width: min(260px, 100%); margin: 4px auto 18px; } }
 .card-story p:not(.card-label) { line-height: 1.65; font-weight: 500; margin-bottom: 16px; }
 .card-story .card-label { margin-top: 6px; margin-bottom: 8px; }
 .card-story a { color: inherit; }

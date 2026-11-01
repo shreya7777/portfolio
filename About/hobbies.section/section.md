@@ -3,11 +3,13 @@ caption: A peek into what I get up to outside of design.
 
 # Images
 
+- Climbing rocks.jpg | Climbing rocks
 - Appreciating art.jpeg | Appreciating art
-- Climbing rocks.jpeg | Climbing rocks
 - Creating content.jpeg | Creating content
 - Gymming.jpeg | Gymming
 - Hiking.JPG | Hiking
-- In a photoshoot.JPG | In a photoshoot
 - Touching grass.jpeg | Touching grass
-- Travelling.jpeg | Travelling
+- Travelling.jpg | Travelling
+- Deeper in the woods.jpg | Deeper in the woods
+- Practicing my speech.jpg | Practicing my speech
+- Taking pictures.jpg | Taking pictures

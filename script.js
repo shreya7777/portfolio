@@ -78,13 +78,14 @@ function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// minimal inline markdown: **bold**, *italic*, [text](url)
+// minimal inline markdown: **bold**, *italic*, ==highlight==, [text](url)
 function inlineMD(s) {
   return esc(s)
     .replace(/\[([^\]]+)\]\((#[^)]+)\)/g, '<a href="$2">$1</a>') // in-site link: same tab
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/==([^=]+)==/g, "<mark>$1</mark>");
 }
 
 function el(tag, cls, html) {
@@ -112,7 +113,6 @@ let chatCollectUrl = "";
 /* ---------- sound engine (Web Audio API, unlocks on first user gesture) ---------- */
 
 const SFX_FILES = {
-  paper: "sfx/paper-turn.wav",
   brew: "sfx/coffee-brew.wav",
   send: "sfx/imessage-send.wav",
   receive: "sfx/imessage-receive.wav",
@@ -397,7 +397,6 @@ function initMicroInteractions() {
   const resumeLink = document.getElementById("resume-link");
   if (resumeLink) {
     resumeLink.addEventListener("click", () => {
-      playSfx("paper", { volume: 0.55 });
       resumeLink.classList.remove("flipping");
       void resumeLink.offsetWidth; // restart the animation on repeat clicks
       resumeLink.classList.add("flipping");
@@ -544,7 +543,19 @@ function renderAbout(text) {
   let buf = [];
   const flush = () => {
     if (sub) story.append(el("p", "card-label", esc(sub)));
-    for (const p of mdParas(buf.join("\n"))) story.append(el("p", null, inlineMD(p)));
+    for (const p of mdParas(buf.join("\n"))) {
+      // a lone ![alt](path) line becomes a bordered photo floated to the right of the text that follows
+      const img = p.match(/^!\[(.*?)\]\((.+?)\)$/);
+      if (img) {
+        const fig = el("figure", "story-photo");
+        const im = el("img");
+        im.src = encodeURI(img[2]);
+        im.alt = img[1];
+        im.loading = "lazy";
+        fig.append(im);
+        story.append(fig);
+      } else story.append(el("p", null, inlineMD(p)));
+    }
     buf = [];
   };
   for (const line of storyBody.split("\n")) {

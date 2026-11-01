@@ -32,7 +32,7 @@ directly as a file won't load the md content.)
 | `Homepage/chat.section/section.md` | The chat widget's greeting line (the rest of the conversation is scripted in `initChat()` in `script.js`) |
 | `Homepage/tools.section/section.md` | Tool icons (images in that folder) |
 | `Homepage/brands.section/section.md` | Brand logos in the auto-scrolling carousel (images live in `Homepage/transparent logos/`) |
-| `About/page.md` | The story card — `# What I'm about` with `## My story` / `## What I do now` subsections |
+| `About/page.md` | The story card — `# What I'm about` with `## My story` / `## What I do now` subsections; a lone `![alt](path)` line inside a subsection becomes a bordered photo floated to the right of the text after it |
 | `About/hobbies.section/section.md` | Feeds the photo-and-video carousel on About — each `- file | caption` line is one slide, arrows/dots included. A `.mp4`, `.webm`, `.mov` or `.m4v` file becomes a video slide (play button, no autoplay, pauses when you move on); keep clips short and compressed, ideally under ~15 MB each |
 | `Work/page.md` | Project cards (`featured: yes` = also shown on Home, `tint` = thumbnail color, `cover` = image path shown instead of the flat tint) and the career timeline |
 | `Work/<Project>/project.md` | One per project folder: case-study text + image gallery |
@@ -105,14 +105,14 @@ re-appended after that rebuild, or it would get wiped out.
 
 ### Micro-interactions & sound
 
-Four short sound effects live in `sfx/` (`paper-turn.wav`, `coffee-brew.wav`,
+Three short sound effects live in `sfx/` (`coffee-brew.wav`,
 `imessage-send.wav`, `imessage-receive.wav`) — all synthesized locally (see the generation
 notes in git history), not ripped from iOS, so they're original assets safe to ship. Browsers
 block audio until the visitor has clicked/tapped somewhere on the page at least once; after
 that, sounds play normally. Behavior:
 
-- **Resume paper** — click plays a page-turn sound and a quick flip animation, then opens
-  the PDF in a new tab.
+- **Resume paper** — click plays a quick flip animation (no sound), then opens the PDF in a
+  new tab.
 - **Coffee mug** — hovering (or focusing via keyboard) raises steam and plays a brewing
   sound.
 - **Chat widget** — a scripted mini-chat, not a live connection to Shreya. It opens showing
@@ -148,7 +148,7 @@ themselves out for 1, 2 or 3 filled blocks, and the whole section hides when non
 - `# Heading` starts a section inside a file; `## Subheading` inside About's story.
 - `- a | b | c` bullet lines are list items with `|`-separated fields — each md file
   has a comment line showing its field order.
-- `**bold**`, `*italic*`, and `[link](url)` work in text.
+- `**bold**`, `*italic*`, `==highlight==` (yellow marker) and `[link](url)` work in text.
 
 ## Adding things
 
