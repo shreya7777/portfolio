@@ -481,8 +481,8 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 
 /* left scrollspy nav + right content column; collapses to one column when a
    project.md has no ## sections (renderProject() toggles .no-nav) */
-.project-layout { display: grid; grid-template-columns: 190px 1fr; gap: 28px; align-items: start; }
-.project-layout.no-nav { grid-template-columns: 1fr; }
+.project-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 28px; align-items: start; }
+.project-layout.no-nav { grid-template-columns: minmax(0, 1fr); }
 .project-nav { position: sticky; top: 104px; }
 .project-nav ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 .project-nav button {
@@ -863,7 +863,7 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   .timeline { grid-auto-flow: row; grid-auto-columns: unset; grid-template-columns: 1fr 1fr; gap: 30px; }
   .timeline::before { display: none; }
   /* scrollspy nav becomes a horizontal scrollable tab strip above the content */
-  .project-layout { grid-template-columns: 1fr; }
+  .project-layout { grid-template-columns: minmax(0, 1fr); }
   .project-nav { position: static; margin-bottom: 18px; }
   .project-nav ul { flex-direction: row; overflow-x: auto; gap: 18px; border-bottom: 2px solid rgba(27, 38, 79, 0.15); padding-bottom: 4px; }
   .project-nav button { border-left: none; border-bottom: 3px solid transparent; padding: 4px 2px 8px; white-space: nowrap; }
@@ -1050,3 +1050,9 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .gate-eye .eye-off { display: none; }
 .gate-eye[aria-pressed="true"] .eye-open { display: none; }
 .gate-eye[aria-pressed="true"] .eye-off { display: block; }
+
+/* article pages: the title block, lock screen and body share one centered reading column */
+.is-article #project-category,
+.is-article h1,
+.is-article .gate,
+.is-article .project-body { max-width: 720px; margin-left: auto; margin-right: auto; }
