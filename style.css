@@ -698,6 +698,7 @@ mark { background: var(--yellow); color: inherit; font-weight: 700; padding: 1px
 @media (max-width: 640px) { .story-photo { float: none; width: min(260px, 100%); margin: 4px auto 18px; } }
 .card-story p:not(.card-label) { line-height: 1.65; font-weight: 500; margin-bottom: 16px; }
 .card-story .card-label { margin-top: 6px; margin-bottom: 8px; }
+.card-story .card-label ~ .card-label { margin-top: 38px; } /* extra air before each later subsection */
 .card-story a { color: inherit; }
 
 .img-fallback {
