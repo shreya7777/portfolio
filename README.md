@@ -33,7 +33,7 @@ directly as a file won't load the md content.)
 | `Homepage/tools.section/section.md` | Tool icons (images in that folder) |
 | `Homepage/brands.section/section.md` | Brand logos in the auto-scrolling carousel (images live in `Homepage/transparent logos/`) |
 | `About/page.md` | The story card — `# What I'm about` with `## My story` / `## What I do now` subsections |
-| `About/hobbies.section/section.md` | Feeds the one photo carousel on About — each image's `| caption` field is its filename-derived caption, arrows/dots included |
+| `About/hobbies.section/section.md` | Feeds the photo-and-video carousel on About — each `- file | caption` line is one slide, arrows/dots included. A `.mp4`, `.webm`, `.mov` or `.m4v` file becomes a video slide (play button, no autoplay, pauses when you move on); keep clips short and compressed, ideally under ~15 MB each |
 | `Work/page.md` | Project cards (`featured: yes` = also shown on Home, `tint` = thumbnail color, `cover` = image path shown instead of the flat tint) and the career timeline |
 | `Work/<Project>/project.md` | One per project folder: case-study text + image gallery |
 | `Work/testimonials.section/section.md` | 3 testimonial blocks (`quote`/`name`/`role`) shown at the bottom of Work — leave a block's `quote` empty to show a "coming soon" placeholder box |

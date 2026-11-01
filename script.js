@@ -541,9 +541,11 @@ function parseGalleryItems(folder, text) {
   if (!text) return [];
   const sec = mdSections(text);
   const imgsKey = Object.keys(sec).find((k) => k.toLowerCase() === "images");
+  // "- file | caption" — a .mp4/.webm/.mov/.m4v file becomes a video slide
   return mdBullets(sec[imgsKey] ?? "").map(([file, caption]) => ({
     src: folder + "/" + file,
     caption: caption || "",
+    video: /\.(mp4|webm|mov|m4v)$/i.test(file),
   }));
 }
 
@@ -558,16 +560,13 @@ function renderCarousel(containerId, items) {
   wrap.replaceChildren(el("p", "card-label", "When I'm not designing, I am"));
 
   const stage = el("div", "carousel-stage");
-  const img = document.createElement("img");
-  img.loading = "lazy";
-  imgFallback(img, "📷");
   const prevBtn = el("button", "carousel-arrow carousel-prev", ARROW_LEFT);
   prevBtn.type = "button";
-  prevBtn.setAttribute("aria-label", "Previous photo");
+  prevBtn.setAttribute("aria-label", "Previous");
   const nextBtn = el("button", "carousel-arrow carousel-next", ARROW_RIGHT);
   nextBtn.type = "button";
-  nextBtn.setAttribute("aria-label", "Next photo");
-  stage.append(prevBtn, img, nextBtn);
+  nextBtn.setAttribute("aria-label", "Next");
+  stage.append(prevBtn, nextBtn);
 
   const caption = el("p", "carousel-caption");
   const dots = el("div", "carousel-dots");
@@ -580,8 +579,28 @@ function renderCarousel(containerId, items) {
   let idx = 0;
   function show(i) {
     idx = (i + items.length) % items.length;
-    img.src = encodeURI(items[idx].src);
-    img.alt = items[idx].caption || "";
+    const item = items[idx];
+    let next;
+    if (item.video) {
+      // controls, no autoplay; "#t=0.1" makes phones show the first frame as a poster
+      next = document.createElement("video");
+      next.className = "carousel-media is-video";
+      next.controls = true;
+      next.playsInline = true;
+      next.preload = "metadata";
+      next.setAttribute("aria-label", item.caption || "Video");
+      next.src = encodeURI(item.src) + "#t=0.1";
+    } else {
+      next = document.createElement("img");
+      next.className = "carousel-media";
+      next.loading = "lazy";
+      imgFallback(next, "📷");
+      next.src = encodeURI(item.src);
+      next.alt = item.caption || "";
+    }
+    // clear whatever is showing (also the emoji imgFallback() swaps in for a broken image)
+    stage.querySelectorAll(".carousel-media, .thumb-emoji").forEach((n) => { if (n.pause) n.pause(); n.remove(); });
+    stage.insertBefore(next, nextBtn);
     caption.textContent = items[idx].caption || "";
     [...dots.children].forEach((d, j) => d.classList.toggle("is-active", j === idx));
   }

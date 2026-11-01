@@ -696,7 +696,8 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   gap: 12px;
   margin-bottom: 14px;
 }
-.carousel-stage img {
+.carousel-stage img,
+.carousel-stage video {
   flex: 1;
   min-width: 0;
   width: 100%;
@@ -706,6 +707,8 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
   border: var(--border-w) solid var(--navy);
   display: block;
 }
+/* video slides keep their whole frame (phone clips are often portrait) on a navy mat */
+.carousel-stage video { object-fit: contain; background: var(--navy); }
 .carousel-arrow {
   width: 40px; height: 40px;
   border-radius: 50%;
@@ -983,7 +986,6 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 }
 .pull-quote cite { display: block; font-style: normal; font-size: 15px; font-weight: 700; color: var(--ink-soft); }
 
-.is-article .project-body { max-width: 720px; }
 .is-article .project-body p { font-size: 18px; line-height: 1.8; margin-bottom: 28px; }
 .is-article .project-body ul { margin: 0 0 36px 24px; }
 .is-article .project-body li { font-size: 18px; line-height: 1.75; margin-bottom: 18px; }
@@ -1050,9 +1052,3 @@ h1, h2, .paper-title { font-family: "Montserrat", sans-serif; }
 .gate-eye .eye-off { display: none; }
 .gate-eye[aria-pressed="true"] .eye-open { display: none; }
 .gate-eye[aria-pressed="true"] .eye-off { display: block; }
-
-/* article pages: the title block, lock screen and body share one centered reading column */
-.is-article #project-category,
-.is-article h1,
-.is-article .gate,
-.is-article .project-body { max-width: 720px; margin-left: auto; margin-right: auto; }
