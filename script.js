@@ -382,6 +382,17 @@ function initChat() {
 
 /* ---------- resume + mug micro-interactions ---------- */
 
+// the header is position: fixed, so its slot in the layout needs to match its height
+function initHeaderSlot() {
+  const header = document.getElementById("site-header");
+  const slot = document.getElementById("header-slot");
+  if (!header || !slot) return;
+  const sync = () => { slot.style.height = header.offsetHeight + "px"; };
+  sync();
+  if (window.ResizeObserver) new ResizeObserver(sync).observe(header);
+  else window.addEventListener("resize", sync);
+}
+
 function initMicroInteractions() {
   const resumeLink = document.getElementById("resume-link");
   if (resumeLink) {
@@ -1166,6 +1177,7 @@ window.addEventListener("hashchange", route);
   renderCarousel("about-carousel", parseGalleryItems("About/hobbies.section", hobbies));
   renderSpotify();
   renderTestimonials(testimonials);
+  initHeaderSlot();
   initMicroInteractions();
   route();
 })();
