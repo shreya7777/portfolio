@@ -81,6 +81,7 @@ function esc(s) {
 // minimal inline markdown: **bold**, *italic*, [text](url)
 function inlineMD(s) {
   return esc(s)
+    .replace(/\[([^\]]+)\]\((#[^)]+)\)/g, '<a href="$2">$1</a>') // in-site link: same tab
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
@@ -663,9 +664,108 @@ function clientLogos(fields) {
 let projectScrollspyObserver = null;
 let moreProjectsTimer = null;
 
-async function renderProject(slug) {
-  const p = PROJECTS.find((x) => x.slug === slug);
-  if (!p) { showView("work"); return; }
+// Password-protected sub-pages live at "#work/<project>/<page>", e.g. #work/ncr/ux-design.
+// Work/<Folder>/<page>.md holds only the public bits (title, category, data file);
+// the case study itself is Work/<Folder>/<data>, encrypted by tools/encrypt-case-study.py
+// and decrypted in the browser once the right password is entered.
+const SECURE_ITERATIONS = 250000; // must match ITERATIONS in tools/encrypt-case-study.py
+const SECURE_KEY = "secure-pw:";
+
+async function decryptBundle(buf, password) {
+  const b = new Uint8Array(buf);
+  const salt = b.slice(0, 16), iv = b.slice(16, 32), mac = b.slice(32, 64), ct = b.slice(64);
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const keys = new Uint8Array(
+    await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations: SECURE_ITERATIONS }, base, 512)
+  );
+  const macKey = await crypto.subtle.importKey("raw", keys.slice(32), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  const signed = new Uint8Array(iv.length + ct.length);
+  signed.set(iv);
+  signed.set(ct, iv.length);
+  if (!(await crypto.subtle.verify("HMAC", macKey, mac, signed))) return null; // wrong password
+  const aesKey = await crypto.subtle.importKey("raw", keys.slice(0, 32), "AES-CBC", false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, aesKey, ct);
+  return JSON.parse(new TextDecoder().decode(plain)); // { md, images: { "<path in md>": dataURI } }
+}
+
+function showGate(slug, secure) {
+  const gate = document.getElementById("project-gate");
+  const form = document.getElementById("gate-form");
+  const input = document.getElementById("gate-input");
+  const btn = document.getElementById("gate-btn");
+  const err = document.getElementById("gate-error");
+  gate.hidden = false;
+  err.hidden = true;
+  input.value = "";
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const pw = input.value;
+    if (!pw) return;
+    btn.disabled = true;
+    err.hidden = true;
+    let bundle = null;
+    try {
+      const res = await fetch(encodeURI(secure.dataUrl), { cache: "no-store" });
+      if (res.ok) bundle = await decryptBundle(await res.arrayBuffer(), pw);
+    } catch { /* treated as a failed unlock below */ }
+    btn.disabled = false;
+    if (!bundle) {
+      err.hidden = false;
+      form.classList.remove("is-wrong");
+      void form.offsetWidth; // restart the shake on repeat tries
+      form.classList.add("is-wrong");
+      input.select();
+      return;
+    }
+    try { sessionStorage.setItem(SECURE_KEY + slug, pw); } catch { /* private mode: they'll just re-enter it */ }
+    renderProject(slug, bundle);
+  };
+  input.focus({ preventScroll: true });
+}
+
+async function renderProject(slug, unlocked) {
+  // "ncr/ux-design" → parent project "ncr" + protected page "ux-design"
+  const [parentSlug, pageName] = slug.split("/");
+  const parent = PROJECTS.find((x) => x.slug === parentSlug);
+  if (!parent) { showView("work"); return; }
+  let p = parent;
+  let secure = null;
+  if (pageName) {
+    const meta = mdKV(await loadMD("Work/" + parent.folder + "/" + pageName + ".md"));
+    if (!meta.title || !meta.data) { showView("project", parentSlug); return; }
+    p = { ...parent, title: meta.title, category: meta.category || parent.title };
+    secure = { dataUrl: "Work/" + parent.folder + "/" + meta.data };
+    // came back to a page already unlocked in this tab → decrypt silently with the remembered password
+    if (!unlocked) {
+      let pw = null;
+      try { pw = sessionStorage.getItem(SECURE_KEY + slug); } catch { /* ignore */ }
+      if (pw) {
+        try {
+          const res = await fetch(encodeURI(secure.dataUrl), { cache: "no-store" });
+          if (res.ok) unlocked = await decryptBundle(await res.arrayBuffer(), pw);
+        } catch { /* fall through to the gate */ }
+      }
+    }
+  }
+  const back = document.getElementById("project-back");
+  if (secure) {
+    back.textContent = "← " + parent.title;
+    back.href = "#work/" + parentSlug;
+    back.dataset.nav = "project";
+    back.dataset.slug = parentSlug;
+  } else {
+    back.textContent = "← All work";
+    back.href = "#work";
+    back.dataset.nav = "work";
+    delete back.dataset.slug;
+  }
+  document.getElementById("project-gate").hidden = true;
+  const resolveSrc = (path) => (unlocked && unlocked.images && unlocked.images[path]) || encodeURI(path);
+  document.querySelector(".card-project-detail").classList.toggle("is-article", !!secure);
+  if (secure && unlocked) {
+    const heading = (unlocked.md.match(/^# (.+)$/m) || [])[1];
+    if (heading && heading.toLowerCase() !== "images") p = { ...p, title: heading };
+  }
   document.getElementById("project-title").textContent = p.title;
   document.getElementById("project-category").textContent = p.category || "";
   const body = document.getElementById("project-body");
@@ -683,7 +783,8 @@ async function renderProject(slug) {
   navList.replaceChildren();
   if (projectScrollspyObserver) { projectScrollspyObserver.disconnect(); projectScrollspyObserver = null; }
 
-  const text = await loadMD("Work/" + p.folder + "/project.md");
+  const gated = secure && !unlocked;
+  const text = secure ? (unlocked && unlocked.md) : await loadMD("Work/" + p.folder + "/project.md");
   const sections = [];
   if (text) {
     const sec = mdSections(text);
@@ -702,7 +803,7 @@ async function renderProject(slug) {
           img.loading = "lazy";
           img.alt = imgMatch[1];
           imgFallback(img, p.emoji || "🖼️");
-          img.src = encodeURI(imgMatch[2]);
+          img.src = resolveSrc(imgMatch[2]);
           if (imgMatch[3]) {
             const fig = el("figure", "gallery-item inline-figure" + (imgMatch[4] ? " is-wide" : ""));
             fig.append(img, el("figcaption", null, inlineMD(imgMatch[3])));
@@ -710,8 +811,36 @@ async function renderProject(slug) {
           } else {
             container.append(img);
           }
+        } else if (lines.length > 1 && lines.every((l) => l.trim().startsWith("|"))) {
+          // "| a | b |" rows → a bordered table; the header row is followed by a "|---|---|" divider
+          const cells = (l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+          const rows = lines.filter((l) => !/^\s*\|[\s:|-]+\|\s*$/.test(l)).map(cells);
+          const table = el("table", "project-table");
+          const thead = el("thead");
+          const headRow = el("tr");
+          for (const c of rows[0]) headRow.append(el("th", null, inlineMD(c)));
+          thead.append(headRow);
+          const tbody = el("tbody");
+          for (const r of rows.slice(1)) {
+            const tr = el("tr");
+            for (const c of r) tr.append(el("td", null, inlineMD(c)));
+            tbody.append(tr);
+          }
+          table.append(thead, tbody);
+          const wrap = el("div", "project-table-wrap");
+          wrap.append(table);
+          container.append(wrap);
         } else if (lines.every((l) => l.trim().startsWith("> "))) {
-          container.append(el("blockquote", null, lines.map((l) => inlineMD(l.trim().slice(2))).join("<br/>")));
+          const quoteText = lines.map((l) => l.trim().slice(2)).join(" ");
+          // '"quote" — Name, Role' → a large pull quote with the attribution underneath
+          const pull = quoteText.match(/^["“](.+?)["”]\s*[—–]\s*(.+)$/);
+          if (pull) {
+            const bq = el("blockquote", "pull-quote");
+            bq.append(el("p", null, "“" + inlineMD(pull[1]) + "”"), el("cite", null, "— " + inlineMD(pull[2])));
+            container.append(bq);
+          } else {
+            container.append(el("blockquote", null, lines.map((l) => inlineMD(l.trim().slice(2))).join("<br/>")));
+          }
         } else if (lines.every((l) => l.trim().startsWith("- "))) {
           const fields = mdBullets(block);
           const fieldCount = fields[0].length;
@@ -730,7 +859,14 @@ async function renderProject(slug) {
         } else {
           const text = block.replace(/\n/g, " ").trim();
           const soloLabel = text.match(/^\*\*([^*]+:)\*\*$/); // paragraph is *only* a short bold label ending in ":", e.g. "**My work:**"
-          if (/^\*\*impact:?\*\*/i.test(text)) {
+          const linkOnly = text.match(/^\[([^\]]+)\]\((#[^)]+)\)$/); // paragraph is *only* an in-site link → button
+          if (linkOnly) {
+            const a = el("a", "btn-link", esc(linkOnly[1]));
+            a.href = linkOnly[2];
+            const para = el("p");
+            para.append(a);
+            container.append(para);
+          } else if (/^\*\*impact:?\*\*/i.test(text)) {
             // "**Impact:** some sentence" gets wrapped in a highlighted callout card
             const box = el("div", "callout-card");
             box.append(el("p", null, inlineMD(text)));
@@ -807,12 +943,14 @@ async function renderProject(slug) {
       img.loading = "lazy";
       img.alt = alt || file;
       imgFallback(img, p.emoji || "🖼️");
-      img.src = encodeURI("Work/" + p.folder + "/" + file);
+      img.src = secure ? resolveSrc(file) : encodeURI("Work/" + p.folder + "/" + file);
       const fig = el("figure", "gallery-item");
       fig.append(img);
       if (alt) fig.append(el("figcaption", null, inlineMD(alt)));
       gallery.append(fig);
     }
+  } else if (gated) {
+    showGate(slug, secure);
   } else {
     body.append(el("p", null, "Case study coming soon."));
   }
@@ -899,6 +1037,22 @@ async function renderProject(slug) {
   }
 }
 
+// article-style pages show images small; clicking one opens it full size
+document.addEventListener("click", (e) => {
+  const img = e.target.closest(".is-article .project-body img");
+  if (!img) return;
+  const box = el("div", "lightbox");
+  const big = document.createElement("img");
+  big.src = img.src;
+  big.alt = img.alt;
+  box.append(big);
+  const close = () => { box.remove(); document.removeEventListener("keydown", onKey); };
+  const onKey = (ev) => { if (ev.key === "Escape") close(); };
+  box.addEventListener("click", close);
+  document.addEventListener("keydown", onKey);
+  document.body.append(box);
+});
+
 /* ---------- router ---------- */
 
 const tabs = document.querySelectorAll(".tab");
@@ -921,14 +1075,15 @@ function showView(name, slug) {
 
 function route() {
   const hash = location.hash.replace("#", "");
-  const [head, slug] = hash.split("/");
+  const [head, ...rest] = hash.split("/");
+  const slug = rest.join("/"); // "ncr" or, for a protected sub-page, "ncr/ux-design"
   if (head === "work" && slug) showView("project", slug);
   else showView(head || "home");
 }
 
 tabs.forEach((t) => t.addEventListener("click", () => showView(t.dataset.tab)));
 document.querySelectorAll("[data-nav]").forEach((a) =>
-  a.addEventListener("click", (e) => { e.preventDefault(); showView(a.dataset.nav); })
+  a.addEventListener("click", (e) => { e.preventDefault(); showView(a.dataset.nav, a.dataset.slug); })
 );
 window.addEventListener("hashchange", route);
 

@@ -39,6 +39,24 @@ directly as a file won't load the md content.)
 | `Work/testimonials.section/section.md` | 3 testimonial blocks (`quote`/`name`/`role`) shown at the bottom of Work — leave a block's `quote` empty to show a "coming soon" placeholder box |
 | `site.md`'s `spotify:` field | Paste a Spotify share/embed URL (e.g. `https://open.spotify.com/playlist/...`) here to make the About page's Spotify box live — `script.js`'s `spotifyEmbedUrl()` converts it to the oEmbed-equivalent `/embed/` iframe automatically |
 
+## Password-protected case study (NCR → UX Design)
+
+Lives at `#work/ncr/ux-design`, linked from the UX Design section of `Work/NCR/project.md`.
+GitHub Pages is public, so the case study is **encrypted** (AES-256, key from the password via
+PBKDF2) and only decrypted in the visitor's browser. The repo never holds the readable text.
+
+| File | Role |
+|---|---|
+| `private/ux-design/case-study.md` + images | The real content (same markdown conventions as a `project.md`). **Gitignored** — never committed. |
+| `tools/encrypt-case-study.py` | Encrypts that folder into `Work/NCR/ux-design.enc`. |
+| `Work/NCR/ux-design.enc` | The encrypted bundle (committed). |
+| `Work/NCR/ux-design.md` | Public lock-screen info: `title`, `category`, `data` (the .enc file). |
+
+To update the content or change the password, edit `private/ux-design/case-study.md`, then run
+`python3 tools/encrypt-case-study.py` (it asks for the password) and commit the new `.enc`.
+Use a long password: the encrypted file is public, so the password is the only protection.
+To add another protected page, add `Work/<Folder>/<page>.md` + its `.enc` and link `#work/<project>/<page>`.
+
 ## Design system
 
 **Light neobrutalism, calmed down a notch.** Cream page background (`#F2EEE3`, with a subtle

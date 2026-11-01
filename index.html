@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=44" />
+  <link rel="stylesheet" href="style.css?v=48" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
 </head>
 <body>
@@ -147,7 +147,7 @@
 
     <!-- ============ VIEW: PROJECT DETAIL ============ -->
     <main id="view-project" class="view" hidden>
-      <a class="back-link" href="#work" data-nav="work">← All work</a>
+      <a class="back-link" id="project-back" href="#work" data-nav="work">← All work</a>
       <div class="project-layout no-nav" id="project-layout">
         <nav class="project-nav" id="project-nav" hidden>
           <ul id="project-nav-list"></ul>
@@ -155,6 +155,17 @@
         <div class="card box-white card-project-detail">
           <p class="card-label" id="project-category"></p>
           <h1 id="project-title"></h1>
+          <!-- password gate: shown instead of the body for protected sub-pages (see unlockSecurePage in script.js) -->
+          <div class="gate" id="project-gate" hidden>
+            <svg class="gate-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+            <h2>This case study is password-protected</h2>
+            <p>Enter the password to read it. Don't have one? <a data-social="email" href="#">Get in touch</a> and I'll send it over.</p>
+            <form class="gate-form" id="gate-form" autocomplete="off">
+              <input class="gate-input" id="gate-input" type="password" placeholder="Password" aria-label="Password" aria-describedby="gate-error" />
+              <button class="gate-btn" id="gate-btn" type="submit">Unlock</button>
+            </form>
+            <p class="gate-error" id="gate-error" role="alert" hidden>That's not the right password — try again.</p>
+          </div>
           <div class="project-body" id="project-body"></div>
           <div class="project-gallery" id="project-gallery"></div>
         </div>
@@ -197,6 +208,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=39"></script>
+  <script src="script.js?v=42"></script>
 </body>
 </html>

@@ -61,6 +61,8 @@ I'm designing the mobile experience for the next-gen back office solution, focus
 
 > The full design case study is password-protected — get in touch for access.
 
+[Open the full design case study →](#work/ncr/ux-design)
+
 **Impact:** Customers are curious to onboard onto the new application, and the sales team is starting to talk about it more.
 
 ## Launch Research
