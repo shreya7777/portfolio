@@ -916,6 +916,11 @@ async function renderProject(slug, unlocked) {
           } else {
             container.append(el("blockquote", null, lines.map((l) => inlineMD(l.trim().slice(2))).join("<br/>")));
           }
+        } else if (lines.every((l) => /^\d+\.\s+/.test(l.trim()))) {
+          // "1. text" lines → a numbered list
+          const ol = document.createElement("ol");
+          for (const l of lines) ol.append(el("li", null, inlineMD(l.trim().replace(/^\d+\.\s+/, ""))));
+          container.append(ol);
         } else if (lines.every((l) => l.trim().startsWith("- "))) {
           const fields = mdBullets(block);
           const fieldCount = fields[0].length;

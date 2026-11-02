@@ -536,7 +536,7 @@ mark { background: var(--yellow); color: inherit; font-weight: 700; padding: 1px
 }
 .project-body p { line-height: 1.65; font-weight: 500; margin-bottom: 16px; }
 .project-body p a { color: inherit; }
-.project-body ul { margin: 0 0 16px 22px; }
+.project-body ul, .project-body ol { margin: 0 0 16px 22px; }
 .project-body li { line-height: 1.65; font-weight: 500; margin-bottom: 6px; }
 .project-body blockquote {
   font-family: "Hind", sans-serif;
@@ -1019,7 +1019,7 @@ mark { background: var(--yellow); color: inherit; font-weight: 700; padding: 1px
 .pull-quote cite { display: block; font-style: normal; font-size: 15px; font-weight: 700; color: var(--ink-soft); }
 
 .is-article .project-body p { font-size: 18px; line-height: 1.8; margin-bottom: 28px; }
-.is-article .project-body ul { margin: 0 0 36px 24px; }
+.is-article .project-body ul, .is-article .project-body ol { margin: 0 0 36px 24px; }
 .is-article .project-body li { font-size: 18px; line-height: 1.75; margin-bottom: 18px; }
 .is-article .project-body li strong { font-weight: 700; color: var(--ink); }
 .is-article .project-section + .project-section { margin-top: 96px; }

@@ -8,7 +8,7 @@ I'm a computer engineer turned UX Designer and now a UX Researcher. Art has been
 
 ![Me taking a bite of a pastry](About/story-photo.jpg)
 
-I’ve always believed a good meal says a lot about the people behind it: the cooks, the servers, the managers keeping it all running. At NCR Voyix, I get to make their long days a little easier, and that’s a part of my work I never take for granted.
+I am a big foodie. I’ve always believed a good meal says a lot about the people behind it: the cooks, the servers, the managers keeping it all running. At NCR Voyix, I get to make their long days a little easier, and that’s a part of my work I never take for granted.
 
 I'm a UX Researcher at [NCR Voyix](https://www.ncrvoyix.com) in Atlanta, where I run end-to-end qualitative and quantitative research to improve experiences for restaurant operators and guests across three product lines.
 
